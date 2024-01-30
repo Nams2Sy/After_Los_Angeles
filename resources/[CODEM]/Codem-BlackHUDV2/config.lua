@@ -13,7 +13,7 @@ Config.HudSettingsCommand = 'hudsettings' -- Command for open hud settings
 Config.DisplayMapOnWalk = false -- true - Show map when walking | false - Hide map when walking
 Config.DisplayRealTime = false -- if you set this to true will show the real time according to player local time | if false it will show the game time
 Config.EnableSpamNotification = true -- Spam preventation for seatbelt, cruise etc.
-Config.EnableDateDisplay = true -- Determines if display date or nor
+Config.EnableDateDisplay = false -- Determines if display date or nor
 Config.DefaultMap = "rectangle" -- rectangle, radial
 Config.DefaultSpeedometerSize = 1.2 -- 0.5 - 1.3
 Config.DefaultHudSize = 1.0 -- 0.5 - 1.3
@@ -154,8 +154,8 @@ Config.Text2Style = {
 }
 
 -------------------------------------------- Keys --------------------------------------------
-Config.DefaultCruiseControlKey = "b" -- Default control key for cruise. Players can change the key according to their desire
-Config.DefaultSeatbeltControlKey = "k" -- Default control key for seatbelt. Players can change the key according to their desire
+Config.DefaultCruiseControlKey = "," -- Default control key for cruise. Players can change the key according to their desire
+Config.DefaultSeatbeltControlKey = "b" -- Default control key for seatbelt. Players can change the key according to their desire
 Config.VehicleEngineToggleKey = "G" -- Default control key for toggle engine. Players can change the key according to their desire
 Config.NitroKey = "X" -- Default control key for use nitro. Players can change the key according to their desire
 
@@ -353,11 +353,11 @@ Config.Notifications = { -- Notifications
     },
     ["cruise_actived"] = {
         type = "success",
-        message = "Cruise actived.",
+        message = "Limiteur activé.",
     },
     ["cruise_disabled"] = {
         type = "error",
-        message = "Cruise disabled.",
+        message = "Limiteur désactivé.",
     },
     ["spam"] = {
         type = "error",
