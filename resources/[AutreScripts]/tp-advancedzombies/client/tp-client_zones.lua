@@ -44,7 +44,6 @@ Citizen.CreateThread(function()
         if v.EnableZoneBlipData then
 
             v.blip = AddBlipForRadius(v.Pos.x, v.Pos.y, v.Pos.z, v.ZoneDistance)
-
             SetBlipHighDetail(v.blip, true)
             SetBlipDisplay(v.blip, v.BlipData.Display)
             SetBlipColour(v.blip, v.BlipData.CircleColor)
