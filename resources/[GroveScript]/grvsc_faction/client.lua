@@ -1,27 +1,40 @@
 RegisterCommand('faction', function() openFaction('main') end, false)
 
+
+local blipzone
+local blip
+
 Citizen.CreateThread(function()
-    ESX.TriggerServerCallback('grvsc_faction:getFaction', function(blip)
-        if blip then
-            blip = blip[1]
-            if blip.coords then
-                local blip = AddBlipForRadius(blip.coords.x, blip.coords.y, blip.coords.z, 200.0)
-                SetBlipHighDetail(blip, true)
-                SetBlipDisplay(blip, 4)
-                SetBlipColour(blip, 10) -- blip.color
-                SetBlipAlpha (blip, 128)
-                local blip = AddBlipForCoord(blip.coords.x, blip.coords.y, blip.coords.z)
-                SetBlipSprite(blip, blip.blip)
-                SetBlipDisplay(blip, 3)
-                SetBlipScale(blip, 1.0)
-                SetBlipColour(blip,10)
-                SetBlipAsShortRange(blip, true)
-                BeginTextCommandSetBlipName("STRING")
-                AddTextComponentString(blip.faction_name)
-                EndTextCommandSetBlipName(blip)
+    while true do
+        Wait(2000)
+        ESX.TriggerServerCallback('grvsc_faction:getFaction', function(blips)
+            if blips then
+                blips = blips[1]
+                if blips.coords then
+                    RemoveBlip(blipzone)
+                    RemoveBlip(blip)
+                    Wait(0)
+                    blips.coords = json.decode(blips.coords)
+                    blipzone = AddBlipForRadius(blips.coords.x, blips.coords.y, blips.coords.z, blips.distance+1.0-1.0)  -- Ajoute le rayon à la fonction
+                    print(type(blips.faction_name))
+                    SetBlipHighDetail(blipzone, true)
+                    SetBlipDisplay(blipzone, 4)
+                    SetBlipColour(blipzone, 10)
+                    SetBlipAlpha(blipzone, 128)
+
+                    blip = AddBlipForCoord(blips.coords.x, blips.coords.y, blips.coords.z)
+                    SetBlipSprite(blip, blips.blip)
+                    SetBlipDisplay(blip, 3)
+                    SetBlipScale(blip, 1.0)
+                    SetBlipColour(blip,10)
+                    SetBlipAsShortRange(blip, true)
+                    BeginTextCommandSetBlipName("STRING")
+                    AddTextComponentString(blips.faction_name)
+                    EndTextCommandSetBlipName(blip)
+                end
             end
-        end
-    end)
+        end)
+    end
 end)
 
 function openFaction(info)

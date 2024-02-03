@@ -1,11 +1,13 @@
 ESX.RegisterServerCallback('grvsc_faction:getFaction', function(source, cb)
     local player = ESX.GetPlayerFromId(source)
-    local id = MySQL.Sync.fetchScalar('SELECT faction_id FROM faction_members WHERE member = @member', {['@member'] = player.identifier})
-    if id then
-        local faction = MySQL.Sync.fetchAll("SELECT * FROM faction_list WHERE id = @id", {['@id'] = id})
-        cb(faction) -- renvoie les informations concernant la faction
-    else
-        cb(false) -- n'a pas de faction
+    if player then
+        local id = MySQL.Sync.fetchScalar('SELECT faction_id FROM faction_members WHERE member = @member', {['@member'] = player.identifier})
+        if id then
+            local faction = MySQL.Sync.fetchAll("SELECT * FROM faction_list WHERE id = @id", {['@id'] = id})
+            cb(faction) -- renvoie les informations concernant la faction
+        else
+            cb(false) -- n'a pas de faction
+        end
     end
 end)
 ESX.RegisterServerCallback('grvsc_faction:DoesPermission', function(source, cb)

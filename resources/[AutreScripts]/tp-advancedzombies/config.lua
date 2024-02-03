@@ -245,140 +245,140 @@ Config.EnteringZoneDelay = 1250
 
 Config.Zones = {
 
-	-- VineWoodHills = { 
-	-- 	ZoneType = "SAFEZONE",
-	-- 	Pos   = {x = -418.36, y = 1151.68, z = 326.0},
-	-- 	ZoneDistance  = 300.0,
-    --     BlockPlayerAggressiveActions = true,
-    --     BlockZombiePedSpawning = true,
+	VineWoodHills = { 
+		ZoneType = "SAFEZONE",
+		Pos   = {x = -418.36, y = 1151.68, z = 326.0},
+		ZoneDistance  = 300.0,
+        BlockPlayerAggressiveActions = true,
+        BlockZombiePedSpawning = true,
 
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
 
-    --         Title = "Vinewood Hills", 
-    --         CircleColor = 2, 
-    --         IdColour = 2, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 557, 
-    --     },
-	-- },
+            Title = "Vinewood Hills", 
+            CircleColor = 2, 
+            IdColour = 2, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 557, 
+        },
+	},
 
-	-- Palmer = {
-	-- 	ZoneType = "DARKZONE",
-	-- 	Pos   = {x = 2744.16, y = 1553.64, z = 35.12},
-    --     ZoneDistance  = 400.0,
-    --     BlockPlayerAggressiveActions = false,
-    --     BlockZombiePedSpawning = false,
+	Palmer = {
+		ZoneType = "DARKZONE",
+		Pos   = {x = 2744.16, y = 1553.64, z = 35.12},
+        ZoneDistance  = 400.0,
+        BlockPlayerAggressiveActions = false,
+        BlockZombiePedSpawning = false,
 
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
             
-    --         Title = "Palmer T. Power Station", 
-    --         CircleColor = 40, 
-    --         IdColour = 40, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 310, 
-    --     },
+            Title = "Palmer T. Power Station", 
+            CircleColor = 40, 
+            IdColour = 40, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 310, 
+        },
 
-    --     -- if you add external zombie ped models, make sure to add them in the Config.ZombiePedModelsData.
-    --     ExtendedSpawnedZombies  = 5,
-    --     ExtendedZombiePedModels = {"zombie_ped_example1", "zombie_ped_example2"},
-	-- },
+        -- if you add external zombie ped models, make sure to add them in the Config.ZombiePedModelsData.
+        ExtendedSpawnedZombies  = 5,
+        ExtendedZombiePedModels = {"zombie_ped_example1", "zombie_ped_example2"},
+	},
 
-	-- HumaneLabs = { 
-	-- 	ZoneType = "DARKZONE",
-	-- 	Pos   = {x = 3527.24, y = 3712.64, z = 36.64},
-    --     ZoneDistance  = 400.0,
-    --     BlockPlayerAggressiveActions = false,
-    --     BlockZombiePedSpawning = false,
+	HumaneLabs = { 
+		ZoneType = "DARKZONE",
+		Pos   = {x = 3527.24, y = 3712.64, z = 36.64},
+        ZoneDistance  = 400.0,
+        BlockPlayerAggressiveActions = false,
+        BlockZombiePedSpawning = false,
 
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
             
-    --         Title = "Humane Labs & Research", 
-    --         CircleColor = 40, 
-    --         IdColour = 40, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 310, 
-    --     },
+            Title = "Humane Labs & Research", 
+            CircleColor = 40, 
+            IdColour = 40, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 310, 
+        },
 
-    --     ExtendedSpawnedZombies  = 0,
-    --     ExtendedZombiePedModels = nil,
-	-- },
+        ExtendedSpawnedZombies  = 0,
+        ExtendedZombiePedModels = nil,
+	},
 
-    -- Cayo = {
-	-- 	ZoneType = "DARKZONE",
-	-- 	Pos   = {x = 4995.08, y = -5094.12, z = 4.96},
-    --     ZoneDistance  = 1300.0,
-    --     BlockPlayerAggressiveActions = false,
-    --     BlockZombiePedSpawning = false,
+    Cayo = {
+		ZoneType = "DARKZONE",
+		Pos   = {x = 4995.08, y = -5094.12, z = 4.96},
+        ZoneDistance  = 1300.0,
+        BlockPlayerAggressiveActions = false,
+        BlockZombiePedSpawning = false,
         
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
             
-    --         Title = "Cayo", 
-    --         CircleColor = 40, 
-    --         IdColour = 40, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 310, 
-    --     },
+            Title = "Cayo", 
+            CircleColor = 40, 
+            IdColour = 40, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 310, 
+        },
 
-    --     ExtendedSpawnedZombies  = 0,
-    --     ExtendedZombiePedModels = nil,
-	-- },
+        ExtendedSpawnedZombies  = 0,
+        ExtendedZombiePedModels = nil,
+	},
 
-	-- MountChiliad = { 
-	-- 	ZoneType = "REDZONE",
-	-- 	Pos   = {x = -526.4, y = 5313.24, z = 94.0},
-    --     ZoneDistance  = 400.0,
-    --     BlockPlayerAggressiveActions = false,
-    --     BlockZombiePedSpawning = false,
+	MountChiliad = { 
+		ZoneType = "REDZONE",
+		Pos   = {x = -526.4, y = 5313.24, z = 94.0},
+        ZoneDistance  = 400.0,
+        BlockPlayerAggressiveActions = false,
+        BlockZombiePedSpawning = false,
 
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
             
-    --         Title = "Mount Chiliad Lumber Mill", 
-    --         CircleColor = 6, 
-    --         IdColour = 6, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 429, 
-    --     },
+            Title = "Mount Chiliad Lumber Mill", 
+            CircleColor = 6, 
+            IdColour = 6, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 429, 
+        },
 
-    --     ExtendedSpawnedZombies  = 0,
-    --     ExtendedZombiePedModels = nil,
-	-- },
+        ExtendedSpawnedZombies  = 0,
+        ExtendedZombiePedModels = nil,
+	},
 
-    -- StabCity = {
-	--     ZoneType = "REDZONE",
-    -- 	Pos   = {x = 57.2, y = 3703.28, z = 39.76},
-    --     ZoneDistance  = 400.0,
-    --     BlockPlayerAggressiveActions = false,
-    --     BlockZombiePedSpawning = false,
+    StabCity = {
+	    ZoneType = "REDZONE",
+    	Pos   = {x = 57.2, y = 3703.28, z = 39.76},
+        ZoneDistance  = 400.0,
+        BlockPlayerAggressiveActions = false,
+        BlockZombiePedSpawning = false,
         
-    --     EnableZoneBlipData = true,
+        EnableZoneBlipData = true,
 
-    --     BlipData = {
+        BlipData = {
             
-    --         Title = "Stab City", 
-    --         CircleColor = 6, 
-    --         IdColour = 6, 
-    --         Scale = 1.0, 
-    --         Display = 4, 
-    --         Id = 429, 
-    --     },
+            Title = "Stab City", 
+            CircleColor = 6, 
+            IdColour = 6, 
+            Scale = 1.0, 
+            Display = 4, 
+            Id = 429, 
+        },
 
-    --     ExtendedSpawnedZombies  = 0,
-    --     ExtendedZombiePedModels = nil,
-    -- },
+        ExtendedSpawnedZombies  = 0,
+        ExtendedZombiePedModels = nil,
+    },
 
 }

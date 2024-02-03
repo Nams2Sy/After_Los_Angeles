@@ -9,7 +9,8 @@ version '1.0.0'
 -- Script côté serveur
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server.lua'
+    'server.lua',
+    'json.lua',
 }
 client_scripts {
     'client.lua'
