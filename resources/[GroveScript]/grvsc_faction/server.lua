@@ -17,6 +17,15 @@ ESX.RegisterServerCallback('grvsc_faction:DoesPermission', function(source, cb)
     -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     cb(false)
 end)
+ESX.RegisterServerCallback('grvsc_faction:getPlayer', function(source, cb)
+    local player = ESX.GetPlayerFromId(source)
+    if player then
+        local id = MySQL.Sync.fetchAll('SELECT * FROM faction_members WHERE member = @member', {['@member'] = player.identifier})
+        cb(id)
+    else
+        cb(false)
+    end
+end)
 
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
