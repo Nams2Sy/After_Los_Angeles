@@ -3,6 +3,7 @@
 Config.OwnerPermission = { -- only owner can use this permission
     -- ['ZXS20889'] = true,
     ['c77c85b0361a556a21c168a15e640ddbc115e67c'] = true, --  licenseid   -- example
+    ['75bc4cfc86cb442e38950a6b028f62352ac49d82'] = true, --  licenseid   -- example
     -- ['char2:d6b94cf21d1e6ef8aa5d713d4016027f14c408b9'] = true, --  licenseid   -- example
     --['THI38496'] = true, --  citizenid   -- example
     --['RUJ16865'] = true, --  citizenid   
