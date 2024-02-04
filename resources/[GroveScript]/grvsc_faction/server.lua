@@ -26,6 +26,16 @@ ESX.RegisterServerCallback('grvsc_faction:getPlayer', function(source, cb)
         cb(false)
     end
 end)
+ESX.RegisterServerCallback('grvsc_faction:fetchAllMembers', function(source, cb)
+    local player = ESX.GetPlayerFromId(source)
+    if player then
+        local id = MySQL.Sync.fetchScalar('SELECT faction_id FROM faction_members WHERE member = @member', {['@member'] = player.identifier})
+        local members = MySQL.Sync.fetchAll('SELECT * FROM faction_members WHERE faction_id = @id', {['@id'] = id})
+        cb(members)
+    else
+        cb(false)
+    end
+end)
 
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
@@ -37,7 +47,6 @@ AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
             kick = true,
             promote = true,
             -- GRADE
-            modifyhierarchy = true,
             creategrade = true,
             modifygrade = true,
             deletegrade = true,
@@ -56,7 +65,6 @@ AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
             kick = false,
             promote = false,
             -- GRADE
-            modifyhierarchy = false,
             creategrade = false,
             modifygrade = false,
             deletegrade = false,
@@ -87,3 +95,22 @@ AddEventHandler('grvsc_faction:newClaim', function(faction, coords)
     -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 end)
 
+RegisterNetEvent('grvsc_faction:updateName')
+AddEventHandler('grvsc_faction:updateName', function(faction, name)
+    MySQL.Async.execute("UPDATE `faction_list` SET `faction_name`=@name WHERE id = @id", {['@id'] = faction, ['@name'] = name})
+end)
+
+RegisterNetEvent('grvsc_faction:updateColor')
+AddEventHandler('grvsc_faction:updateColor', function(faction, color)
+    MySQL.Async.execute("UPDATE `faction_list` SET `color`=@color WHERE id = @id", {['@id'] = faction, ['@color'] = color})
+end)
+
+RegisterNetEvent('grvsc_faction:updateBlip')
+AddEventHandler('grvsc_faction:updateBlip', function(faction, blip)
+    MySQL.Async.execute("UPDATE `faction_list` SET `blip`=@blip WHERE id = @id", {['@id'] = faction, ['@blip'] = blip})
+end)
+
+RegisterNetEvent('grvsc_faction:kickPlayer')
+AddEventHandler('grvsc_faction:kickPlayer', function(target, faction, auteur)
+    -- Vérifié que AUTEUR à bien la permissions de viré TARGET (faction contient l'id)
+end)

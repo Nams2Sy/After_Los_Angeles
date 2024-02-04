@@ -7,6 +7,7 @@ Citizen.CreateThread(function()
     local blipname
     local blipdistance
     local blipcoords
+    local blipblip
     local change = true
     while true do
         Wait(2000)
@@ -28,6 +29,10 @@ Citizen.CreateThread(function()
                     end
                     if blipcoords ~= blips.coords then
                         blipcoords = blips.coords
+                        change = true
+                    end
+                    if blipblip ~= blips.blip then
+                        blipblip = blips.blip
                         change = true
                     end
                     blipcolor = tonumber(blipcolor)
@@ -131,6 +136,57 @@ function openFaction(info)
                     }
                     if permissions[player.grade].modifyfactionname or permissions[player.grade].modifyfactioncolor or permissions[player.grade].modifyfactionblip then
                         local indexOptions = {}
+                        if permissions[player.grade].modifyfactionname then
+                            indexOptions[#indexOptions + 1] = {
+                                title = 'Modifier le nom',
+                                description = 'Permet de modifier le nom de votre faction',
+                                icon = 'fa-solid fa-signature',
+                                iconColor = 'yellow',
+                                onSelect = function()
+                                    local input = lib.inputDialog(result.faction_name, {
+                                        {type = 'input', label = 'Quel sera le nom de votre faction ?', description = 'Veuillez préter attention au réglement', required = true, min = 4, max = 25},
+                                      })
+                                    if not input then openFaction('main') return end
+                                    TriggerServerEvent('grvsc_faction:updateName', result.id, input[1])
+                                    Wait(0)
+                                    openFaction('main')
+                                end
+                            }
+                        end
+                        if permissions[player.grade].modifyfactioncolor then
+                            indexOptions[#indexOptions + 1] = {
+                                title = 'Modifier la couleur',
+                                description = 'Permet de modifier la couleur de votre faction',
+                                icon = 'fa-solid fa-palette',
+                                iconColor = 'yellow',
+                                onSelect = function()
+                                    local input = lib.inputDialog(result.faction_name, {
+                                        {type = 'number', label = 'Quel couleur souhaitez vous ?', description = 'https://docs.fivem.net/docs/game-references/blips/#blip-colors', required = true, min = 1, max = 85},
+                                      })
+                                    if not input then openFaction('main') return end
+                                    TriggerServerEvent('grvsc_faction:updateColor', result.id, input[1])
+                                    Wait(0)
+                                    openFaction('main')
+                                end
+                            }
+                        end
+                        if permissions[player.grade].modifyfactionblip then
+                            indexOptions[#indexOptions + 1] = {
+                                title = 'Modifier le blip',
+                                description = 'Permet de modifier le blip de votre faction',
+                                icon = 'fa-solid fa-tag',
+                                iconColor = 'yellow',
+                                onSelect = function()
+                                    local input = lib.inputDialog(result.faction_name, {
+                                        {type = 'number', label = 'Quel blip souhaitez vous ?', description = 'https://docs.fivem.net/docs/game-references/blips/', required = true, min = 0, max = 883},
+                                      })
+                                    if not input then openFaction('main') return end
+                                    TriggerServerEvent('grvsc_faction:updateBlip', result.id, input[1])
+                                    Wait(0)
+                                    openFaction('main')
+                                end
+                            }
+                        end
                         options[#options + 1] = {
                             title = 'Gérer la faction',
                             icon = 'fa-solid fa-flag',
@@ -147,11 +203,70 @@ function openFaction(info)
                             end
                         }
                     end
-                    if permissions[player.grade].kick or permissions[player.grade].promote or permissions[player.grade].modifyhierarchy then
+                    if permissions[player.grade].kick or permissions[player.grade].promote then
                         options[#options + 1] = {
                             title = 'Gérer les membres',
                             icon = 'fa-solid fa-user-pen',
-                            iconColor = 'orange'
+                            iconColor = 'orange',
+                            onSelect = function()
+                                local indexOptions = {}
+                                ESX.TriggerServerCallback('grvsc_faction:fetchAllMembers', function(members)
+                                    for k, v in pairs(members) do
+                                        if permissions[v.grade].hierarchy <= permissions[player.grade].hierarchy then
+                                            indexOptions[#indexOptions + 1 ] = {
+                                                title = '['..v.grade..'] '..v.member_name,
+                                                description = 'Cliquez pour intéragir',
+                                                icon = 'fa-solid fa-user-tie',
+                                                onSelect = function()
+                                                    local indexOptions2 = {}
+
+                                                    if permissions[player.grade].kick then
+                                                        indexOptions2[#indexOptions2 + 1 ] = {
+                                                            title = 'Virer '..v.member_name,
+                                                            icon = 'fa-solid fa-ban',
+                                                            iconColor = 'red',
+                                                            onSelect = function()
+                                                                TriggerServerEvent('grvsc_faction:kickPlayer', v.member, result.id, player.member)
+                                                            end
+                                                        }
+                                                    end
+                                                    if permissions[player.grade].promote then
+                                                        indexOptions2[#indexOptions2 + 1 ] = {
+                                                            title = 'Rétrograder/Promouvoir '..v.member_name,
+                                                            icon = 'fa-solid fa-plus',
+                                                            iconColor = 'orange'
+                                                        }
+                                                    end
+
+                                                    lib.registerContext({
+                                                        id = 'ManageMember2',
+                                                        title = '[FACTION] '..result.faction_name,
+                                                        menu = 'ManageMember',
+                                                        options = indexOptions2
+                                                    })
+                                                    Wait(100)
+                                                    lib.showContext('ManageMember2')
+                                                end
+                                            }
+                                        end
+                                    end
+                                    if #indexOptions == 0 then
+                                        indexOptions[#indexOptions + 1 ] = {
+                                            title = 'Aucun membre ne vous est accessible',
+                                            icon = 'fa-solid fa-circle-exclamation',
+                                            iconColor = 'red'
+                                        }
+                                    end
+                                    lib.registerContext({
+                                        id = 'ManageMember',
+                                        title = '[FACTION] '..result.faction_name,
+                                        menu = 'Menufaction',
+                                        options = indexOptions
+                                    })
+                                    Wait(100)
+                                    lib.showContext('ManageMember')
+                                end)
+                            end
                         }
                     end
                     if permissions[player.grade].creategrade or permissions[player.grade].modifygrade or permissions[player.grade].deletegrade then
