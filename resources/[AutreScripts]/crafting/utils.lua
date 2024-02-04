@@ -7,17 +7,6 @@ Utils.Translate = function (type)
     return type
 end
 
-Utils.Split = function (inputstr, sep)
-    if sep == nil then
-        sep = "%s"
-    end
-    local t={}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-        table.insert(t, str)
-    end
-    return t
-end
-
 Utils.GetRecipes = function (type)
     local recipes = {}
     for _, recipe in ipairs(Config.Recipes[type]) do
