@@ -1,14 +1,13 @@
 RegisterCommand('faction', function() openFaction('main') end, false)
 
-
-local blipzone
-local blip
-local blipcolor
-local blipname
-local blipdistance
-local change
 Citizen.CreateThread(function()
-    change = true
+    local blipzone
+    local blip
+    local blipcolor
+    local blipname
+    local blipdistance
+    local blipcoords
+    local change = true
     while true do
         Wait(2000)
         ESX.TriggerServerCallback('grvsc_faction:getFaction', function(blips)
@@ -25,6 +24,10 @@ Citizen.CreateThread(function()
                     end
                     if blipname ~= blips.faction_name then
                         blipname = blips.faction_name
+                        change = true
+                    end
+                    if blipcoords ~= blips.coords then
+                        blipcoords = blips.coords
                         change = true
                     end
                     blipcolor = tonumber(blipcolor)
@@ -69,28 +72,106 @@ function openFaction(info)
                     result = result[1]
                     local permissions = json.decode(result.permissions)
                     player = player[1]
-                    for k, v in pairs(permissions) do
-                        for i, o in pairs(v) do
-                            print(i)
-                        end
-                    end
-
                     local options = {}
-                    
                     options[#options + 1] = {
-                        title = 'Votre faction: '..result.faction_name,
-                        icon = 'fa-solid fa-house-user',
-                        iconColor = 'green'
+                        title = '',
+                        description = '↓ Information personnel ↓',
+                        disabled = true,
                     }
                     options[#options + 1] = {
-                        title = 'Votre Grade: '..player.grade,
+                        title = 'Vous êtes '..player.grade,
                         icon = 'fa-solid fa-user-tie',
                         iconColor = 'green'
                     }
+                    options[#options + 1] = {
+                        title = '',
+                        description = '↓ Information de la faction ↓',
+                        disabled = true,
+                    }
+                    options[#options + 1] = {
+                        title = result.level,
+                        description = 'Rayon de construction: '..result.distance..' mètres',
+                        icon = 'fa-solid fa-campground',
+                        onSelect = function()
+                            lib.alertDialog({
+                                header = result.level..' ['..result.distance..'M]',
+                                content = 'Ceci est votre grade de faction, au plus votre faction évolue dans le temps et au plus votre grade augmentera afin de vous offrir un plus grand rayon d\'action.',
+                                centered = true,
+                            })
+                            openFaction('main')
+                        end
+                    }
+                    if permissions[player.grade].modifyfactioncoords then
+                        if not result.coords then
+                            options[#options + 1] = {
+                                title = 'Vous n\'avez pas encore de territoire',
+                                description = 'Cliquez pour installer votre territoire sur votre position',
+                                icon = 'fa-solid fa-circle-exclamation',
+                                iconColor = 'red',
+                                onSelect = function()
+                                    claimZone(result.id, GetEntityCoords(PlayerPedId()))
+                                end
+                            }
+                        else
+                            options[#options + 1] = {
+                                title = 'Vous avez un territoire',
+                                description = 'Cliquez pour redéfinir votre territoire sur votre position',
+                                icon = 'fa-solid fa-circle-exclamation',
+                                iconColor = 'green',
+                                onSelect = function()
+                                    claimZone(result.id, GetEntityCoords(PlayerPedId()))
+                                end
+                            }
+                        end
+                    end
+                    options[#options + 1] = {
+                        title = '',
+                        description = '↓ Vos permissions et action ↓',
+                        disabled = true,
+                    }
+                    if permissions[player.grade].modifyfactionname or permissions[player.grade].modifyfactioncolor or permissions[player.grade].modifyfactionblip then
+                        local indexOptions = {}
+                        options[#options + 1] = {
+                            title = 'Gérer la faction',
+                            icon = 'fa-solid fa-flag',
+                            iconColor = 'orange',
+                            onSelect = function()
+                                lib.registerContext({
+                                    id = 'ManageFaction',
+                                    title = '[FACTION] '..result.faction_name,
+                                    menu = 'Menufaction',
+                                    options = indexOptions
+                                })
+                                Wait(100)
+                                lib.showContext('ManageFaction')
+                            end
+                        }
+                    end
+                    if permissions[player.grade].kick or permissions[player.grade].promote or permissions[player.grade].modifyhierarchy then
+                        options[#options + 1] = {
+                            title = 'Gérer les membres',
+                            icon = 'fa-solid fa-user-pen',
+                            iconColor = 'orange'
+                        }
+                    end
+                    if permissions[player.grade].creategrade or permissions[player.grade].modifygrade or permissions[player.grade].deletegrade then
+                        options[#options + 1] = {
+                            title = 'Gérer les grades',
+                            icon = 'fa-solid fa-file-pen',
+                            iconColor = 'orange'
+                        }
+                    end
+                    if permissions[player.grade].recruit then
+                        options[#options + 1] = {
+                            title = 'Recruter joueur proche',
+                            icon = 'fa-solid fa-user-plus',
+                            iconColor = 'green'
+                        }
+                    end
 
                     lib.registerContext({
                         id = 'Menufaction',
-                        title = 'Menu de faction',
+                        title = '[FACTION] '..result.faction_name,
                         options = options
                     })
                     Wait(100)
@@ -137,4 +218,24 @@ function openFaction(info)
             lib.showContext('Createfaction')
         end)
     end
+end
+
+function claimZone(faction, coords)
+    ESX.TriggerServerCallback('grvsc_faction:getFaction', function(result)
+        result = result[1]
+        if result.coords then
+            local alert = lib.alertDialog({
+                header = 'Réfléchissez bien avant de faire ceci',
+                content = 'Cela supprimmera définitivement toute les constructions présente sur votre térritoire',
+                centered = true,
+                cancel = true
+            })
+            if alert == 'confirm' then
+                TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
+            end 
+        else
+            TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
+        end
+        openFaction('main')
+    end)
 end

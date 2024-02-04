@@ -29,15 +29,61 @@ end)
 
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
+    local permissions = {
+        ['Chef'] = {
+            hierarchy = 15, -- MAXIMUM
+            -- MEMBER
+            recruit = true,
+            kick = true,
+            promote = true,
+            -- GRADE
+            modifyhierarchy = true,
+            creategrade = true,
+            modifygrade = true,
+            deletegrade = true,
+            -- FACTION
+            modifyfactionname = true,
+            modifyfactioncolor = true,
+            modifyfactionblip = true,
+            modifyfactioncoords = true,
+            -- BUILDING
+            builddestroy = true
+        },
+        ['Membre'] = {
+            hierarchy = 0,
+            -- MEMBER
+            recruit = false,
+            kick = false,
+            promote = false,
+            -- GRADE
+            modifyhierarchy = false,
+            creategrade = false,
+            modifygrade = false,
+            deletegrade = false,
+            -- FACTION
+            modifyfactionname = false,
+            modifyfactioncolor = false,
+            modifyfactionblip = false,
+            modifyfactioncoords = false,
+            -- BUILDING
+            builddestroy = false
+        }
+    }
+    
     local player = ESX.GetPlayerFromId(source)
-    MySQL.Sync.execute("INSERT INTO `faction_list`(`faction_name`, `color`, `blip`) VALUES (@name, @color, @blip)", {['@name'] = name, ['@color'] = color, ['@blip'] = blip})
+    MySQL.Sync.execute("INSERT INTO `faction_list`(`faction_name`, `color`, `blip`, `permissions`) VALUES (@name, @color, @blip, @permissions)", {['@name'] = name, ['@color'] = color, ['@blip'] = blip, ['@permissions'] = json.encode(permissions)})
     Wait(0)
     -- Utilisez MySQL.Async.fetchScalar pour obtenir l'ID auto-incrémenté
     MySQL.Async.fetchScalar("SELECT LAST_INSERT_ID() as id", {}, function(id)
-        MySQL.Sync.execute("INSERT INTO `faction_members`(`member`, `grade`, `faction_id`) VALUES (@member,'chef',@id)", {['@member'] = player.identifier, ['@id'] = id})
+        MySQL.Sync.execute("INSERT INTO `faction_members`(`member`, `grade`, `faction_id`) VALUES (@member,'Chef',@id)", {['@member'] = player.identifier, ['@id'] = id})
     end)
 end)
 
-
-
+RegisterNetEvent('grvsc_faction:newClaim')
+AddEventHandler('grvsc_faction:newClaim', function(faction, coords)
+    MySQL.Async.execute("UPDATE `faction_list` SET `coords`=@coords WHERE id = @id", {['@id'] = faction, ['@coords'] = json.encode(coords)})
+    -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    -- BIEN PENSER A APPELLER LEVENT/FONCTION QUI DELETE TOUT LES PROPS DE LA BASE DE DONNEE DE LANCIEN TERRITOIRE
+    -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+end)
 
