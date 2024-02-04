@@ -9,10 +9,12 @@ lua54 'yes'
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server.lua',
+    'server/server.lua',
+    'server/callbacks.lua',
 }
 client_scripts {
-    'client.lua',
+    'client/client.lua',
+    'client/interface.lua',
 }
 shared_scripts {
     '@ox_lib/init.lua',

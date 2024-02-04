@@ -1,5 +1,7 @@
 Config = {}
 
+Config.Tick = 1000 -- in miliseconds
+
 Config.Recipes = {}
 
 Config.Recipes.FURNACE = {
@@ -17,7 +19,7 @@ Config.Recipes.FURNACE = {
                 quantity = 1
             }
         }, -- TODO check if recipe exist on serverside or add an identifier to make it unique
-        time = 5
+        time = 10
     },
     {
         id = 2,

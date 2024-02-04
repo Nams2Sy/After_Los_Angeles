@@ -22,3 +22,24 @@ Utils.GetRecipe = function (type, recipe_id)
     end
     return {}
 end
+
+Utils.Dump = function (o)
+    if type(o) == 'table' then
+        local s = '{ '
+        for k,v in pairs(o) do
+            if type(k) ~= 'number' then k = '"'..k..'"' end
+            s = s .. '['..k..'] = ' .. dump(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(o)
+    end
+end
+
+Utils.Clamp = function (low, n, high)
+    return math.min(math.max(n, low), high)
+end
+
+Utils.StartsWith = function (String,Start)
+    return string.sub(String,1,string.len(Start))==Start
+end
