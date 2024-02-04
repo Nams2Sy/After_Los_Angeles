@@ -11,11 +11,7 @@ local function registerRecipe(type)
             {
                 title = "1 raw metal = 1 ingot",
                 onSelect = function ()
-                    print(current_station_id)
-                    TriggerServerEvent("als_stations:craft", current_station_id, {
-                        input = { "1:raw_metal" },
-                        output = { "1:ingot" } -- TODO check if recipe exist on serverside or add an identifier to make it unique
-                    })
+                    TriggerServerEvent("als_stations:craft", GetPlayerServerId(PlayerId()), current_station_id, 1)
                 end
             }
         }
@@ -33,21 +29,58 @@ registerRecipe("FURNACE")
 local function openMenu(station_id)
     local station = lib.callback.await('als_stations:get_station', false, station_id)
 
+    local options = {}
+
+    table.insert(options, {
+        disabled = true,
+        description = "↓ Ingrédients ↓"
+    })
+    if #station.input == 0 then
+        table.insert(options, {
+            title = "(Vide)",
+        })
+    else
+        for _, item_data in ipairs(station.input) do
+            local quantity = tonumber(Utils.Split(item_data, ":")[1])
+            local item = Utils.Split(item_data, ":")[2]
+    
+            table.insert(options, {
+                title = tostring(quantity).."x "..item,
+            })
+        end
+    end
+
+    table.insert(options, {
+        disabled = true,
+        description = "↓ Sortie ↓"
+    })
+    if #station.output == 0 then
+        table.insert(options, {
+            title = "(Vide)",
+        })
+    else
+        for _, item_data in ipairs(station.output) do
+            local quantity = tonumber(Utils.Split(item_data, ":")[1])
+            local item = Utils.Split(item_data, ":")[2]
+
+            table.insert(options, {
+                title = tostring(quantity).."x "..item,
+            })
+        end
+    end
+
+    table.insert(options, {
+        title = 'Recettes',
+        description = "Voir la liste des recettes possibles.",
+        icon = "fa-solid fa-book",
+        iconColor = "#e67e22",
+        menu = "recipes:"..station.type
+    })
+
     lib.registerContext({
         id = 'station',
         title = string.upper(Utils.Translate(station.type)),
-        options = {
-            {
-                title = 'INPUT',
-            },
-            {
-                title = 'OUTPUT',
-            },
-            {
-                title = 'Recettes',
-                menu = "recipes:"..station.type
-            },
-        }
+        options = options
     })
     current_station_id = station_id
     lib.showContext('station')

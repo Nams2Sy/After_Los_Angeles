@@ -17,3 +17,19 @@ Utils.Split = function (inputstr, sep)
     end
     return t
 end
+
+Utils.GetRecipes = function (type)
+    local recipes = {}
+    for _, recipe in ipairs(Config.Recipes[type]) do
+        table.insert(recipes, recipe)
+    end
+    print(json.encode(recipes))
+    return recipes
+end
+
+Utils.GetRecipe = function (type, recipe_id)
+    for _, recipe in ipairs(Config.Recipes[type]) do
+        if (recipe.id == recipe_id) then return recipe end
+    end
+    return {}
+end

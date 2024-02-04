@@ -1,4 +1,10 @@
 return {
+
+	['ingot'] = {
+		label = 'Ingot',
+		weight = 80,
+	},
+
 	['enginekit'] = {
 		label = 'Kit Moteur',
 		description = 'Permet de réparer le moteur',
