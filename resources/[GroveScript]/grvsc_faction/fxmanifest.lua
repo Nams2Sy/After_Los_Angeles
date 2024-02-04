@@ -13,7 +13,8 @@ server_scripts {
     'json.lua',
 }
 client_scripts {
-    'client.lua'
+    'client.lua',
+    'config.lua'
 }
 
 shared_scripts {

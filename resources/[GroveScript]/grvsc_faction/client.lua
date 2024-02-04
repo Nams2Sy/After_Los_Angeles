@@ -1,5 +1,4 @@
 RegisterCommand('faction', function() openFaction('main') end, false)
-
 Citizen.CreateThread(function()
     local blipzone
     local blip
@@ -212,14 +211,13 @@ function openFaction(info)
                                 local indexOptions = {}
                                 ESX.TriggerServerCallback('grvsc_faction:fetchAllMembers', function(members)
                                     for k, v in pairs(members) do
-                                        if permissions[v.grade].hierarchy <= permissions[player.grade].hierarchy then
+                                        if permissions[v.grade].hierarchy < permissions[player.grade].hierarchy then
                                             indexOptions[#indexOptions + 1 ] = {
                                                 title = '['..v.grade..'] '..v.member_name,
                                                 description = 'Cliquez pour intéragir',
                                                 icon = 'fa-solid fa-user-tie',
                                                 onSelect = function()
                                                     local indexOptions2 = {}
-
                                                     if permissions[player.grade].kick then
                                                         indexOptions2[#indexOptions2 + 1 ] = {
                                                             title = 'Virer '..v.member_name,
@@ -227,6 +225,8 @@ function openFaction(info)
                                                             iconColor = 'red',
                                                             onSelect = function()
                                                                 TriggerServerEvent('grvsc_faction:kickPlayer', v.member, result.id, player.member)
+                                                                Wait(10)
+                                                                openFaction('main')
                                                             end
                                                         }
                                                     end
@@ -234,7 +234,45 @@ function openFaction(info)
                                                         indexOptions2[#indexOptions2 + 1 ] = {
                                                             title = 'Rétrograder/Promouvoir '..v.member_name,
                                                             icon = 'fa-solid fa-plus',
-                                                            iconColor = 'orange'
+                                                            iconColor = 'orange',
+                                                            onSelect = function()
+                                                                local indexOptions3 = {}
+                                                                -- Création d'une table temporaire pour stocker les éléments triés
+                                                                local sortedOptions = {}
+                                                                -- Boucle pour trier les éléments en fonction du niveau hiérarchique
+                                                                for k, v2 in pairs(permissions) do
+                                                                    if permissions[player.grade].hierarchy > v2.hierarchy then
+                                                                        if player.grade == k then
+                                                                            sortedOptions[#sortedOptions + 1] = {
+                                                                                title = k..' (actif)',
+                                                                                icon = 'fa-solid fa-biohazard',
+                                                                                iconColor = 'orange',
+                                                                            }
+                                                                        else
+                                                                            sortedOptions[#sortedOptions + 1] = {
+                                                                                title = k,
+                                                                                description = 'Cliquez pour attribuer ce grade',
+                                                                                icon = 'fa-solid fa-biohazard',
+                                                                                iconColor = 'orange',
+                                                                                onSelect = function()
+                                                                                    TriggerServerEvent('grvsc_faction:promote', v.member, result.id, player.member, k)
+                                                                                    Wait(100)
+                                                                                    openFaction('main')
+                                                                                end
+                                                                            }
+                                                                        end
+                                                                    end
+                                                                end
+                                                                indexOptions3 = sortedOptions
+                                                                lib.registerContext({
+                                                                    id = 'ManageMember3',
+                                                                    title = '[FACTION] '..result.faction_name,
+                                                                    menu = 'ManageMember',
+                                                                    options = indexOptions3
+                                                                })
+                                                                Wait(100)
+                                                                lib.showContext('ManageMember3')
+                                                            end
                                                         }
                                                     end
 
@@ -273,7 +311,107 @@ function openFaction(info)
                         options[#options + 1] = {
                             title = 'Gérer les grades',
                             icon = 'fa-solid fa-file-pen',
-                            iconColor = 'orange'
+                            iconColor = 'orange',
+                            onSelect = function()
+                                -- Création d'une table temporaire pour stocker les éléments triés
+                                local sortedOptions = {}
+                                -- Boucle pour trier les éléments en fonction du niveau hiérarchique
+                                for k, v2 in pairs(permissions) do
+                                    if permissions[player.grade].hierarchy > v2.hierarchy then
+                                        sortedOptions[#sortedOptions + 1] = {
+                                            title = k,
+                                            description = 'Cliquez pour modifier ce grade',
+                                            icon = 'fa-solid fa-biohazard',
+                                            iconColor = 'orange',
+                                            onSelect = function()
+                                                local indexOptions = {}
+                                                if permissions[player.grade].modifygrade then
+                                                    indexOptions[#indexOptions + 1] = {
+                                                        title = '',
+                                                        description = '↓ Les informations général ↓',
+                                                        disabled = true,
+                                                    }
+                                                    indexOptions[#indexOptions + 1 ] = {
+                                                        title = 'Modifier le nom',
+                                                        description = 'Nom actuel: '..k,
+                                                        icon = 'fa-solid fa-circle-exclamation',
+                                                        iconColor = 'green',
+                                                        onSelect = function()
+                                                            -- MODIF NAME
+                                                        end
+                                                    }
+                                                    indexOptions[#indexOptions + 1 ] = {
+                                                        title = 'Modifier le niveau hierachique',
+                                                        description = 'Niveau actuel: '..v2.hierarchy,
+                                                        icon = 'fa-solid fa-circle-exclamation',
+                                                        iconColor = 'green',
+                                                        onSelect = function()
+                                                            -- MODIF HIERARCHY
+                                                        end
+                                                    }
+                                                    indexOptions[#indexOptions + 1] = {
+                                                        title = '',
+                                                        description = '↓ Les permissions ↓',
+                                                        disabled = true,
+                                                    }
+                                                    local permissionActif
+                                                    local iconActif
+                                                    local iconColor
+                                                    for k2, v2 in pairs(permissions[k]) do
+                                                        if k2 ~= 'hierarchy' then
+                                                            permissionActif = 'Désactivé [Clique pour activé]'
+                                                            iconActif = 'fa-solid fa-toggle-off'
+                                                            iconColor = '#a2462f'
+                                                            if v2 then 
+                                                                permissionActif = 'Activé [Clique pour désactivé]'
+                                                                iconActif = 'fa-solid fa-toggle-on'
+                                                                iconColor = '#2FA246'
+                                                            end
+                                                            if permissions[player.grade][k2] then
+                                                                indexOptions[#indexOptions + 1] = {
+                                                                    title = Config.permissions[k2],
+                                                                    description = permissionActif,
+                                                                    icon = iconActif,
+                                                                    iconColor = iconColor,
+                                                                    onSelect = function()
+                                                                        TriggerServerEvent('grvsc_faction:setPermission', player.member, result.id, k2, v2, k)
+                                                                        Wait(100)
+                                                                        openFaction('main')
+                                                                    end
+                                                                }
+                                                            else
+                                                                indexOptions[#indexOptions + 1] = {
+                                                                    title = Config.permissions[k2],
+                                                                    description = 'Vous n\'avez pas la permission de modifier cette permission',
+                                                                    disabled = true,
+                                                                    icon = iconActif,
+                                                                    iconColor = iconColor
+                                                                }
+                                                            end
+                                                        end
+                                                    end
+                                                end
+                                                lib.registerContext({
+                                                    id = 'ManageRank2',
+                                                    title = '[FACTION] '..result.faction_name,
+                                                    menu = 'Menufaction',
+                                                    options = indexOptions
+                                                })
+                                                Wait(100)
+                                                lib.showContext('ManageRank2')
+                                            end
+                                        }
+                                    end
+                                end
+                                lib.registerContext({
+                                    id = 'ManageRank',
+                                    title = '[FACTION] '..result.faction_name,
+                                    menu = 'Menufaction',
+                                    options = sortedOptions
+                                })
+                                Wait(100)
+                                lib.showContext('ManageRank')
+                            end
                         }
                     end
                     if permissions[player.grade].recruit then

@@ -7,7 +7,7 @@ Config.NewESX = true
 Config.UseCommand = true -- true / false (if you want to use command to open report ui)
 Config.UseKey = true -- true / false (if you want to use key to open report ui) (IMPORTANT ! If you make it false, your previously joined players will still work. You can prevent this to some extent by changing the command name.)
 
-Config.Open = {command = "adminreport", key = "H", text = "Open Report UI"}
+Config.Open = {command = "adminreport", key = "O", text = "Ouvrir le menu des reports"}
 Config.UserOpen = {command = "report"}
 
 Config.MaxReportCountOfType = {
