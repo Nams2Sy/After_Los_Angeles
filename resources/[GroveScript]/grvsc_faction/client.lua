@@ -1,4 +1,11 @@
-RegisterCommand('faction', function() openFaction('main') end, false)
+local keybind = lib.addKeybind({
+    name = 'faction',
+    description = 'Ouvrir le menu des factions',
+    defaultKey = 'F6',
+    onPressed = function(self)
+        openFaction('main')
+    end,
+})
 Citizen.CreateThread(function()
     local blipzone
     local blip
@@ -56,17 +63,13 @@ Citizen.CreateThread(function()
                         EndTextCommandSetBlipName(blip)
                     end
                 end
+            else
+                RemoveBlip(blip)
+                RemoveBlip(blipzone)
             end
         end)
     end
 end)
-
-
-
-
-
-
-
 
 function openFaction(info)
     if info == 'main' then
@@ -313,9 +316,7 @@ function openFaction(info)
                             icon = 'fa-solid fa-file-pen',
                             iconColor = 'orange',
                             onSelect = function()
-                                -- Création d'une table temporaire pour stocker les éléments triés
                                 local sortedOptions = {}
-                                -- Boucle pour trier les éléments en fonction du niveau hiérarchique
                                 for k, v2 in pairs(permissions) do
                                     if permissions[player.grade].hierarchy > v2.hierarchy then
                                         sortedOptions[#sortedOptions + 1] = {
@@ -326,6 +327,14 @@ function openFaction(info)
                                             onSelect = function()
                                                 local indexOptions = {}
                                                 if permissions[player.grade].modifygrade then
+                                                    if permissions[k].default == true then 
+                                                        indexOptions[#indexOptions + 1] = {
+                                                            title = 'Grade par défaut',
+                                                            description = 'Ce grade est obtenue par les nouveaux membres',
+                                                            icon = 'warning',
+                                                            iconColor = 'yellow'
+                                                        }
+                                                    end
                                                     indexOptions[#indexOptions + 1] = {
                                                         title = '',
                                                         description = '↓ Les informations général ↓',
@@ -337,7 +346,16 @@ function openFaction(info)
                                                         icon = 'fa-solid fa-circle-exclamation',
                                                         iconColor = 'green',
                                                         onSelect = function()
-                                                            -- MODIF NAME
+                                                            local input = lib.inputDialog(k, {
+                                                                {type = 'input', label = 'Nouveau nom', description = 'Veuillez prêter attention au règlement', required = true, min = 2, max = 16},
+                                                              })
+                                                            if not input then 
+                                                                lib.showContext('ManageRank2') 
+                                                            else
+                                                                TriggerServerEvent('grvsc_faction:changeRankName', k, result.id, player.member, input[1])
+                                                                Wait(100)
+                                                                openFaction('main')
+                                                            end
                                                         end
                                                     }
                                                     indexOptions[#indexOptions + 1 ] = {
@@ -346,7 +364,16 @@ function openFaction(info)
                                                         icon = 'fa-solid fa-circle-exclamation',
                                                         iconColor = 'green',
                                                         onSelect = function()
-                                                            -- MODIF HIERARCHY
+                                                            local input = lib.inputDialog(k, {
+                                                                {type = 'number', label = 'Quel niveau hierachique souhaitez ?', description = 'Plus le niveau est haut, plus le grade sera haut placé', required = true, min = 0, max = permissions[player.grade].hierarchy-1},
+                                                              })
+                                                            if not input then 
+                                                                lib.showContext('ManageRank2')
+                                                            else
+                                                                TriggerServerEvent('grvsc_faction:changeRankHierarchy', k, result.id, player.member, input[1])
+                                                                Wait(100)
+                                                                openFaction('main')
+                                                            end
                                                         end
                                                     }
                                                     indexOptions[#indexOptions + 1] = {
@@ -358,7 +385,7 @@ function openFaction(info)
                                                     local iconActif
                                                     local iconColor
                                                     for k2, v2 in pairs(permissions[k]) do
-                                                        if k2 ~= 'hierarchy' then
+                                                        if k2 ~= 'hierarchy' or k2 ~= 'default' then
                                                             permissionActif = 'Désactivé [Clique pour activé]'
                                                             iconActif = 'fa-solid fa-toggle-off'
                                                             iconColor = '#a2462f'
@@ -418,7 +445,68 @@ function openFaction(info)
                         options[#options + 1] = {
                             title = 'Recruter joueur proche',
                             icon = 'fa-solid fa-user-plus',
-                            iconColor = 'green'
+                            iconColor = 'green',
+                            onSelect = function()
+                                local closestPlayer, closestPlayerDistance = ESX.Game.GetClosestPlayer()
+                                local indexOptions = {}
+                                if closestPlayer ~= -1 and closestPlayerDistance < 5.0 then 
+                                    indexOptions[#indexOptions+1] = {
+                                        title = 'Recruter ce joueur ? '..'(Voir le marqueur)'
+                                    }
+                                    indexOptions[#indexOptions+1] = {
+                                        title = '',
+                                        disabled = true,
+                                    }
+                                    indexOptions[#indexOptions+1] = {
+                                        title = 'Confirmer',
+                                        icon = 'user-plus',
+                                        iconColor = 'green',
+                                        onSelect = function()
+                                            local input = lib.inputDialog('Recrutement de faction', {
+                                                {type = 'input', label = 'Quel nom voulez vous lui attribué ?', description = 'Ce nom sera visible par les membres de votre faction', required = true, min = 2, max = 16},
+                                              })
+                                            if input then
+                                                local playerId = GetPlayerServerId(closestPlayer)
+                                                TriggerServerEvent('grvsc_faction:addMember', player.member, playerId, input[1], result.id)
+                                            end
+                                        end
+                                    }
+                                    indexOptions[#indexOptions+1] = {
+                                        title = 'Annuler',
+                                        icon = 'user-minus',
+                                        iconColor = 'red',
+                                        onSelect = function()
+                                            lib.showContext('Menufaction')
+                                        end
+                                    }
+                                    Citizen.CreateThread(function()
+                                        Wait(100)
+                                        while lib.getOpenContextMenu() == 'recruitMember' do
+                                            Wait(5)
+                                            local pos = GetEntityCoords(GetPlayerPed(closestPlayer))
+                                            if pos then
+                                                local amplitude = 0.1
+                                                local height = amplitude * math.sin(GetGameTimer() * 0.005)  
+                                                DrawMarker(0, pos.x, pos.y, pos.z+1.2 + height, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.2, 0.2, 0, 255, 0, 200, false, true, 2, false, false, false, false)
+                                            end
+                                        end
+                                    end)
+                                else
+                                    indexOptions[#indexOptions+1] = {
+                                        title = 'Aucun joueur proche',
+                                        icon = 'ban',
+                                        iconColor = 'red'
+                                    }
+                                end
+                                lib.registerContext({
+                                    id = 'recruitMember',
+                                    menu = 'Menufaction',
+                                    title = '[FACTION] '..result.faction_name,
+                                    options = indexOptions
+                                })
+                                Wait(100)
+                                lib.showContext('recruitMember')
+                            end
                         }
                     end
 
@@ -459,7 +547,8 @@ function openFaction(info)
                           })
                         if input then
                             TriggerServerEvent('grvsc_faction:createFaction', input[1], input[2], input[3])
-                            print('Votre faction est crée')
+                            Wait(100)
+                            openFaction('main')
                         else
                             lib.showContext('Createfaction')
                         end

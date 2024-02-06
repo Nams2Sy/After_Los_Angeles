@@ -55,7 +55,8 @@ AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
             modifyfactionblip = true,
             modifyfactioncoords = true,
             -- BUILDING
-            builddestroy = true
+            builddestroy = true,
+            default = false
         },
         ['Membre'] = {
             hierarchy = 0,
@@ -73,7 +74,8 @@ AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
             modifyfactionblip = false,
             modifyfactioncoords = false,
             -- BUILDING
-            builddestroy = false
+            builddestroy = false,
+            default = true
         }
     }
     local player = ESX.GetPlayerFromId(source)
@@ -141,6 +143,50 @@ AddEventHandler('grvsc_faction:setPermission', function(auteur, faction, permiss
             end
             permissions = json.encode(permissions)
             MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+        end
+    end
+end)
+RegisterNetEvent('grvsc_faction:changeRankName')
+AddEventHandler('grvsc_faction:changeRankName', function(grade, faction, auteur, name)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    permissions = json.decode(permissions)
+    if permissions[gradeauteur].hierarchy > permissions[grade].hierarchy then
+        permissions[name] = permissions[grade]
+        permissions[grade] = nil
+        permissions = json.encode(permissions)
+        MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+        MySQL.Async.execute("UPDATE `faction_members` SET `grade`=@name WHERE grade=@grade AND faction_id=@faction",{['@grade'] = grade, ['@name'] = name, ['@faction']=faction})
+    end
+end)
+RegisterNetEvent('grvsc_faction:changeRankHierarchy')
+AddEventHandler('grvsc_faction:changeRankHierarchy', function(grade, faction, auteur, number)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    permissions = json.decode(permissions)
+    if permissions[gradeauteur].hierarchy > permissions[grade].hierarchy and permissions[gradeauteur].hierarchy > number then
+        permissions[grade].hierarchy = number
+        permissions = json.encode(permissions)
+        MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+    end
+end)
+RegisterNetEvent('grvsc_faction:addMember')
+AddEventHandler('grvsc_faction:addMember', function(auteur, target, name, faction)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    permissions = json.decode(permissions)
+    if permissions[gradeauteur].recruit == true then
+        for k, v in pairs(permissions) do
+            if v.default == true then
+                local player = ESX.GetPlayerFromId(target)
+                if player then
+                    local exist = MySQL.Sync.fetchScalar("SELECT faction_id FROM faction_members WHERE member = @member", {['@member'] = player.identifier})
+                    if not exist then
+                        MySQL.Sync.execute("INSERT INTO `faction_members`(`member`, `grade`, `faction_id`, `member_name`) VALUES (@member,@grade,@id,@name)", {['@member'] = player.identifier,['@grade'] = k ,['@id'] = faction, ['@name'] = name})
+                    end
+                end
+                break
+            end
         end
     end
 end)

@@ -1,5 +1,5 @@
 Config = {}
-Config.Locale = GetConvar("esx:locale", "en")
+Config.Locale = GetConvar("esx:locale", "fr")
 
 Config.OxInventory = GetResourceState("ox_inventory") ~= 'missing' 
 
@@ -18,7 +18,7 @@ Config.Accounts = {
     },
 }
 
-Config.StartingAccountMoney = { bank = 50000 }
+Config.StartingAccountMoney = { bank = 0 }
 
 Config.StartingInventoryItems = false -- table/false
 

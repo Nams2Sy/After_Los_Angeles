@@ -13,115 +13,115 @@ bot_name = "Server Name"
 discord_webhook = {
     ['kick'] = {
         allow = true, -- true enabled | false disabled
-        webhook = ""
+        webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['warn'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['revive'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['kill'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['freeze'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['goto'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['bring'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['giverank'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['markgps'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['giveitem'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['clearvehicle'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['allrevive'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['cleararea'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['heal'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['sendpm'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['weatherandtimeChange'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['givecashandgivebank'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['noclip'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['godmode'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['invisible'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['showname'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['givevehicle'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['announce'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['clothingmenu'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['clearinventory'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['setjob'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['runCommand'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['reapirvehicle'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['takepicture'] = {
         allow = true, -- true enabled | false disabled
@@ -129,7 +129,7 @@ discord_webhook = {
     },
     ['jail'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['permaban'] = {
         allow = true, -- true enabled | false disabled
@@ -141,7 +141,7 @@ discord_webhook = {
     },
     ['openban'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
 
 
@@ -149,15 +149,15 @@ discord_webhook = {
     
     ['loginserver'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['quitserver'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     ['deathplayer'] = {
         allow = true, -- true enabled | false disabled
-       webhook = ""
+       webhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
     },
     
     
