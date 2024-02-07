@@ -190,3 +190,32 @@ AddEventHandler('grvsc_faction:addMember', function(auteur, target, name, factio
         end
     end
 end)
+RegisterNetEvent('grvsc_faction:createRank')
+AddEventHandler('grvsc_faction:createRank', function(auteur, name, hierarchy, faction)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    permissions = json.decode(permissions)
+    if permissions[gradeauteur].creategrade == true then
+        permissions[name] = {
+            hierarchy = hierarchy, -- MAXIMUM
+            -- MEMBER
+            recruit = false,
+            kick = false,
+            promote = false,
+            -- GRADE
+            creategrade = false,
+            modifygrade = false,
+            deletegrade = false,
+            -- FACTION
+            modifyfactionname = false,
+            modifyfactioncolor = false,
+            modifyfactionblip = false,
+            modifyfactioncoords = false,
+            -- BUILDING
+            builddestroy = false,
+            default = false
+        }
+        permissions = json.encode(permissions)
+        MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+    end
+end)

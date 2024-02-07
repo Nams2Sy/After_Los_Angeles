@@ -6,6 +6,7 @@ local keybind = lib.addKeybind({
         openFaction('main')
     end,
 })
+
 Citizen.CreateThread(function()
     local blipzone
     local blip
@@ -70,7 +71,6 @@ Citizen.CreateThread(function()
         end)
     end
 end)
-
 function openFaction(info)
     if info == 'main' then
         ESX.TriggerServerCallback('grvsc_faction:getFaction', function(result)
@@ -149,6 +149,7 @@ function openFaction(info)
                                         {type = 'input', label = 'Quel sera le nom de votre faction ?', description = 'Veuillez préter attention au réglement', required = true, min = 4, max = 25},
                                       })
                                     if not input then openFaction('main') return end
+                                    input[1] = input[1]:gsub("[^%w%s]", "") --gsub("[^%w]", "")
                                     TriggerServerEvent('grvsc_faction:updateName', result.id, input[1])
                                     Wait(0)
                                     openFaction('main')
@@ -197,7 +198,7 @@ function openFaction(info)
                                 lib.registerContext({
                                     id = 'ManageFaction',
                                     title = '[FACTION] '..result.faction_name,
-                                    menu = 'Menufaction',
+                                    menu  = 'Menufaction',
                                     options = indexOptions
                                 })
                                 Wait(100)
@@ -270,7 +271,7 @@ function openFaction(info)
                                                                 lib.registerContext({
                                                                     id = 'ManageMember3',
                                                                     title = '[FACTION] '..result.faction_name,
-                                                                    menu = 'ManageMember',
+                                                                    menu  = 'ManageMember',
                                                                     options = indexOptions3
                                                                 })
                                                                 Wait(100)
@@ -282,7 +283,7 @@ function openFaction(info)
                                                     lib.registerContext({
                                                         id = 'ManageMember2',
                                                         title = '[FACTION] '..result.faction_name,
-                                                        menu = 'ManageMember',
+                                                        menu  = 'ManageMember',
                                                         options = indexOptions2
                                                     })
                                                     Wait(100)
@@ -301,7 +302,7 @@ function openFaction(info)
                                     lib.registerContext({
                                         id = 'ManageMember',
                                         title = '[FACTION] '..result.faction_name,
-                                        menu = 'Menufaction',
+                                        menu  = 'Menufaction',
                                         options = indexOptions
                                     })
                                     Wait(100)
@@ -317,6 +318,31 @@ function openFaction(info)
                             iconColor = 'orange',
                             onSelect = function()
                                 local sortedOptions = {}
+                                if permissions[player.grade].creategrade then
+                                    sortedOptions[#sortedOptions + 1] = {
+                                        title = 'Créer un nouveau grade',
+                                        icon = 'folder-plus',
+                                        iconColor = 'green',
+                                        onSelect = function()
+                                            local input = lib.inputDialog('Création de grade', {
+                                                {type = 'input', label = 'Quel est le nom du grade ?', required = true, min = 1, max = 200},
+                                                {type = 'number', label = 'Quel est son niveau de permission ?', description='0 étant le plus bas et 15 étant celui du chef', min = 0, max = 14, required = true,},
+                                            })
+                                            if input then
+                                                input[1] = input[1]:gsub("[^%w]", "") --gsub("[^%w]", "")
+                                                TriggerServerEvent('grvsc_faction:createRank', player.member, input[1], input[2], result.id)
+                                                Wait(100)
+                                                openFaction('main')
+                                            else
+                                                openFaction('main')
+                                            end
+                                        end
+                                    }
+                                    sortedOptions[#sortedOptions + 1] = {
+                                        title = '',
+                                        disabled = true,
+                                    }
+                                end
                                 for k, v2 in pairs(permissions) do
                                     if permissions[player.grade].hierarchy > v2.hierarchy then
                                         sortedOptions[#sortedOptions + 1] = {
@@ -352,6 +378,7 @@ function openFaction(info)
                                                             if not input then 
                                                                 lib.showContext('ManageRank2') 
                                                             else
+                                                                input[1] = input[1]:gsub("[^%w]", "")
                                                                 TriggerServerEvent('grvsc_faction:changeRankName', k, result.id, player.member, input[1])
                                                                 Wait(100)
                                                                 openFaction('main')
@@ -384,6 +411,8 @@ function openFaction(info)
                                                     local permissionActif
                                                     local iconActif
                                                     local iconColor
+                                                    permissions[k].default = nil
+                                                    permissions[k].hierarchy = nil
                                                     for k2, v2 in pairs(permissions[k]) do
                                                         if k2 ~= 'hierarchy' or k2 ~= 'default' then
                                                             permissionActif = 'Désactivé [Clique pour activé]'
@@ -421,7 +450,7 @@ function openFaction(info)
                                                 lib.registerContext({
                                                     id = 'ManageRank2',
                                                     title = '[FACTION] '..result.faction_name,
-                                                    menu = 'Menufaction',
+                                                    menu  = 'ManageRank',
                                                     options = indexOptions
                                                 })
                                                 Wait(100)
@@ -433,7 +462,7 @@ function openFaction(info)
                                 lib.registerContext({
                                     id = 'ManageRank',
                                     title = '[FACTION] '..result.faction_name,
-                                    menu = 'Menufaction',
+                                    menu  = 'Menufaction',
                                     options = sortedOptions
                                 })
                                 Wait(100)
@@ -466,6 +495,7 @@ function openFaction(info)
                                                 {type = 'input', label = 'Quel nom voulez vous lui attribué ?', description = 'Ce nom sera visible par les membres de votre faction', required = true, min = 2, max = 16},
                                               })
                                             if input then
+                                                input[1] = input[1]:gsub("[^%w%s]", "") --gsub("[^%w]", "")
                                                 local playerId = GetPlayerServerId(closestPlayer)
                                                 TriggerServerEvent('grvsc_faction:addMember', player.member, playerId, input[1], result.id)
                                             end
@@ -500,7 +530,7 @@ function openFaction(info)
                                 end
                                 lib.registerContext({
                                     id = 'recruitMember',
-                                    menu = 'Menufaction',
+                                    menu  = 'Menufaction',
                                     title = '[FACTION] '..result.faction_name,
                                     options = indexOptions
                                 })
@@ -509,7 +539,16 @@ function openFaction(info)
                             end
                         }
                     end
-
+                    options[#options + 1] = {
+                        title = '',
+                        disabled = true,
+                    }
+                    options[#options + 1] = {
+                        title = 'Quittez la faction',
+                        icon = 'ban',
+                        iconColor = 'red'
+                    }
+                    
                     lib.registerContext({
                         id = 'Menufaction',
                         title = '[FACTION] '..result.faction_name,
@@ -546,6 +585,7 @@ function openFaction(info)
                             {type = 'number', label = 'Quel sera la couleur du blip ?', default = '1', description = 'Cela représentera la couleur du blip', required = true, min = 1},
                           })
                         if input then
+                            input[1] = input[1]:gsub("[^%w]", "")
                             TriggerServerEvent('grvsc_faction:createFaction', input[1], input[2], input[3])
                             Wait(100)
                             openFaction('main')

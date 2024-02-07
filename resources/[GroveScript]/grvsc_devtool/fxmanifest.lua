@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 author 'Nam2Sy'
-description 'Devtool by grovescript'
+description 'Faction'
 version '1.0.0'
 
 -- Script côté serveur
