@@ -71,6 +71,7 @@ Citizen.CreateThread(function()
         end)
     end
 end)
+
 function openFaction(info)
     if info == 'main' then
         ESX.TriggerServerCallback('grvsc_faction:getFaction', function(result)
@@ -79,6 +80,10 @@ function openFaction(info)
                     result = result[1]
                     local permissions = json.decode(result.permissions)
                     player = player[1]
+                    if not permissions[player.grade] then
+                        print('ERREUR: Votre grade ne possède aucune permissions. Contactez l\'administration')
+                        return
+                    end
                     local options = {}
                     options[#options + 1] = {
                         title = '',
@@ -351,110 +356,7 @@ function openFaction(info)
                                             icon = 'fa-solid fa-biohazard',
                                             iconColor = 'orange',
                                             onSelect = function()
-                                                local indexOptions = {}
-                                                if permissions[player.grade].modifygrade then
-                                                    if permissions[k].default == true then 
-                                                        indexOptions[#indexOptions + 1] = {
-                                                            title = 'Grade par défaut',
-                                                            description = 'Ce grade est obtenue par les nouveaux membres',
-                                                            icon = 'warning',
-                                                            iconColor = 'yellow'
-                                                        }
-                                                    end
-                                                    indexOptions[#indexOptions + 1] = {
-                                                        title = '',
-                                                        description = '↓ Les informations général ↓',
-                                                        disabled = true,
-                                                    }
-                                                    indexOptions[#indexOptions + 1 ] = {
-                                                        title = 'Modifier le nom',
-                                                        description = 'Nom actuel: '..k,
-                                                        icon = 'fa-solid fa-circle-exclamation',
-                                                        iconColor = 'green',
-                                                        onSelect = function()
-                                                            local input = lib.inputDialog(k, {
-                                                                {type = 'input', label = 'Nouveau nom', description = 'Veuillez prêter attention au règlement', required = true, min = 2, max = 16},
-                                                              })
-                                                            if not input then 
-                                                                lib.showContext('ManageRank2') 
-                                                            else
-                                                                input[1] = input[1]:gsub("[^%w]", "")
-                                                                TriggerServerEvent('grvsc_faction:changeRankName', k, result.id, player.member, input[1])
-                                                                Wait(100)
-                                                                openFaction('main')
-                                                            end
-                                                        end
-                                                    }
-                                                    indexOptions[#indexOptions + 1 ] = {
-                                                        title = 'Modifier le niveau hierachique',
-                                                        description = 'Niveau actuel: '..v2.hierarchy,
-                                                        icon = 'fa-solid fa-circle-exclamation',
-                                                        iconColor = 'green',
-                                                        onSelect = function()
-                                                            local input = lib.inputDialog(k, {
-                                                                {type = 'number', label = 'Quel niveau hierachique souhaitez ?', description = 'Plus le niveau est haut, plus le grade sera haut placé', required = true, min = 0, max = permissions[player.grade].hierarchy-1},
-                                                              })
-                                                            if not input then 
-                                                                lib.showContext('ManageRank2')
-                                                            else
-                                                                TriggerServerEvent('grvsc_faction:changeRankHierarchy', k, result.id, player.member, input[1])
-                                                                Wait(100)
-                                                                openFaction('main')
-                                                            end
-                                                        end
-                                                    }
-                                                    indexOptions[#indexOptions + 1] = {
-                                                        title = '',
-                                                        description = '↓ Les permissions ↓',
-                                                        disabled = true,
-                                                    }
-                                                    local permissionActif
-                                                    local iconActif
-                                                    local iconColor
-                                                    permissions[k].default = nil
-                                                    permissions[k].hierarchy = nil
-                                                    for k2, v2 in pairs(permissions[k]) do
-                                                        if k2 ~= 'hierarchy' or k2 ~= 'default' then
-                                                            permissionActif = 'Désactivé [Clique pour activé]'
-                                                            iconActif = 'fa-solid fa-toggle-off'
-                                                            iconColor = '#a2462f'
-                                                            if v2 then 
-                                                                permissionActif = 'Activé [Clique pour désactivé]'
-                                                                iconActif = 'fa-solid fa-toggle-on'
-                                                                iconColor = '#2FA246'
-                                                            end
-                                                            if permissions[player.grade][k2] then
-                                                                indexOptions[#indexOptions + 1] = {
-                                                                    title = Config.permissions[k2],
-                                                                    description = permissionActif,
-                                                                    icon = iconActif,
-                                                                    iconColor = iconColor,
-                                                                    onSelect = function()
-                                                                        TriggerServerEvent('grvsc_faction:setPermission', player.member, result.id, k2, v2, k)
-                                                                        Wait(100)
-                                                                        openFaction('main')
-                                                                    end
-                                                                }
-                                                            else
-                                                                indexOptions[#indexOptions + 1] = {
-                                                                    title = Config.permissions[k2],
-                                                                    description = 'Vous n\'avez pas la permission de modifier cette permission',
-                                                                    disabled = true,
-                                                                    icon = iconActif,
-                                                                    iconColor = iconColor
-                                                                }
-                                                            end
-                                                        end
-                                                    end
-                                                end
-                                                lib.registerContext({
-                                                    id = 'ManageRank2',
-                                                    title = '[FACTION] '..result.faction_name,
-                                                    menu  = 'ManageRank',
-                                                    options = indexOptions
-                                                })
-                                                Wait(100)
-                                                lib.showContext('ManageRank2')
+                                                refreshPermissions(player.grade, k, result.id, result.faction_name, player.member)
                                             end
                                         }
                                     end
@@ -546,7 +448,10 @@ function openFaction(info)
                     options[#options + 1] = {
                         title = 'Quittez la faction',
                         icon = 'ban',
-                        iconColor = 'red'
+                        iconColor = 'red',
+                        onSelect = function()
+                            TriggerServerEvent('grvsc_faction:leaveFaction', player.member, result.id)
+                        end
                     }
                     
                     lib.registerContext({
@@ -620,4 +525,140 @@ function claimZone(faction, coords)
         end
         openFaction('main')
     end)
+end
+
+function refreshPermissions(playerGrade, k, factionid, factionName, auteur)
+    ESX.TriggerServerCallback('grvsc_faction:getPermissions', function(permissions)
+        ESX.TriggerServerCallback('grvsc_faction:getMemberfromrank', function(result)
+            permissions = json.decode(permissions)
+            local indexOptions = {}
+            if permissions[playerGrade].modifygrade then
+                if permissions[k].default == true then 
+                    indexOptions[#indexOptions + 1] = {
+                        title = 'Grade par défaut',
+                        description = 'Ce grade est obtenue par les nouveaux membres',
+                        icon = 'warning',
+                        iconColor = 'yellow'
+                    }
+                end
+                indexOptions[#indexOptions + 1] = {
+                    title = '',
+                    description = '↓ Les informations général ↓',
+                    disabled = true,
+                }
+                indexOptions[#indexOptions + 1 ] = {
+                    title = 'Modifier le nom',
+                    description = 'Nom actuel: '..k,
+                    icon = 'fa-solid fa-circle-exclamation',
+                    iconColor = 'green',
+                    onSelect = function()
+                        local input = lib.inputDialog(k, {
+                            {type = 'input', label = 'Nouveau nom', description = 'Veuillez prêter attention au règlement', required = true, min = 2, max = 16},
+                        })
+                        if not input then 
+                            lib.showContext('ManageRank2') 
+                        else
+                            input[1] = input[1]:gsub("[^%w]", "")
+                            TriggerServerEvent('grvsc_faction:changeRankName', k, factionid, auteur, input[1])
+                            Wait(50)
+                            refreshPermissions(playerGrade, input[1], factionid, factionName, auteur)
+                        end
+                    end
+                }
+                indexOptions[#indexOptions + 1 ] = {
+                    title = 'Modifier le niveau hierachique',
+                    description = 'Niveau actuel: '..permissions[k].hierarchy,
+                    icon = 'fa-solid fa-circle-exclamation',
+                    iconColor = 'green',
+                    onSelect = function()
+                        local input = lib.inputDialog(k, {
+                            {type = 'number', label = 'Quel niveau hierachique souhaitez ?', description = 'Plus le niveau est haut, plus le grade sera haut placé', required = true, min = 0, max = permissions[playerGrade].hierarchy-1},
+                        })
+                        if not input then 
+                            lib.showContext('ManageRank2')
+                        else
+                            TriggerServerEvent('grvsc_faction:changeRankHierarchy', k, factionid, auteur, input[1])
+                            Wait(50)
+                            refreshPermissions(playerGrade, k, factionid, factionName, auteur)
+                        end
+                    end
+                }
+                indexOptions[#indexOptions + 1] = {
+                    title = '',
+                    description = '↓ Les permissions ↓',
+                    disabled = true,
+                }
+                local permissionActif
+                local iconActif
+                local iconColor
+                for k2, v2 in pairs(permissions[k]) do
+                    if k2 ~= 'hierarchy' and k2 ~= 'default' then
+                        permissionActif = 'Désactivé [Clique pour activé]'
+                        iconActif = 'fa-solid fa-toggle-off'
+                        iconColor = '#a2462f'
+                        if v2 then 
+                            permissionActif = 'Activé [Clique pour désactivé]'
+                            iconActif = 'fa-solid fa-toggle-on'
+                            iconColor = '#2FA246'
+                        end
+                        if permissions[playerGrade][k2] then
+                            indexOptions[#indexOptions + 1] = {
+                                title = Config.permissions[k2],
+                                description = permissionActif,
+                                icon = iconActif,
+                                iconColor = iconColor,
+                                onSelect = function()
+                                    TriggerServerEvent('grvsc_faction:setPermission', auteur, factionid, k2, v2, k)
+                                    Wait(50)
+                                    refreshPermissions(playerGrade, k, factionid, factionName, auteur)
+                                end
+                            }
+                        else
+                            if Config.permissions[k2] then
+                                indexOptions[#indexOptions + 1] = {
+                                    title = Config.permissions[k2],
+                                    description = 'Vous n\'avez pas la permission de modifier cette permission',
+                                    disabled = true,
+                                    icon = iconActif,
+                                    iconColor = iconColor
+                                }
+                            end
+                        end
+                    end
+                end
+                indexOptions[#indexOptions + 1] = {
+                    title = '',
+                    disabled = true,
+                }
+                if not permissions[k].default then
+                    if result == 0 then
+                        indexOptions[#indexOptions + 1 ] = {
+                            title = 'Supprimer le grade',
+                            icon = 'fa-solid fa-trash',
+                            iconColor = 'red',
+                            onSelect = function()
+                                TriggerServerEvent('grvsc_faction:deleteRank', auteur, k, factionid)
+                            end
+                        }
+                    else
+                        indexOptions[#indexOptions + 1 ] = {
+                            title = 'Supprimer le grade',
+                            description = 'Actuellement: '..result..' membre(s) ont ce grade. Veuillez retirer ce grade à chacun avant de le supprimer',
+                            icon = 'fa-solid fa-trash',
+                            disabled = true,
+                            iconColor = 'red',
+                        }
+                    end
+                end
+            end
+            lib.registerContext({
+                id = 'ManageRank2',
+                title = '[FACTION] '..factionName,
+                menu  = 'ManageRank',
+                options = indexOptions
+            })
+            Wait(100)
+            lib.showContext('ManageRank2')
+        end, factionid, k)
+    end, factionid)
 end

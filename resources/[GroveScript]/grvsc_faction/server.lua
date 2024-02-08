@@ -36,6 +36,14 @@ ESX.RegisterServerCallback('grvsc_faction:fetchAllMembers', function(source, cb)
         cb(false)
     end
 end)
+ESX.RegisterServerCallback('grvsc_faction:getPermissions', function(source, cb, faction_id)
+    local faction = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @id", {['@id'] = faction_id})
+    cb(faction)
+end)
+ESX.RegisterServerCallback('grvsc_faction:getMemberfromrank', function(source, cb, faction_id, rank)
+    local members = MySQL.Sync.fetchAll('SELECT * FROM faction_members WHERE faction_id = @id AND grade = @rank', {['@id'] = faction_id, ['@rank'] = rank})
+    cb(#members)
+end)
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
     local permissions = {
@@ -217,5 +225,25 @@ AddEventHandler('grvsc_faction:createRank', function(auteur, name, hierarchy, fa
         }
         permissions = json.encode(permissions)
         MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+    end
+end)
+RegisterNetEvent('grvsc_faction:deleteRank')
+AddEventHandler('grvsc_faction:deleteRank', function(auteur, grade, faction)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    permissions = json.decode(permissions)
+    if permissions[gradeauteur].hierarchy > permissions[grade].hierarchy then
+        local members = MySQL.Sync.fetchAll('SELECT * FROM faction_members WHERE faction_id = @id AND grade = @rank', {['@id'] = faction, ['@rank'] = grade})
+        if #members == 0 then
+            permissions[grade] = nil
+            MySQL.Async.execute("UPDATE `faction_list` SET `permissions`='"..permissions.."' WHERE id="..faction.."")
+        end
+    end
+end)
+RegisterNetEvent('grvsc_faction:leaveFaction')
+AddEventHandler('grvsc_faction:leaveFaction', function(auteur, faction)
+    local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    if gradeauteur ~= 'Chef' then
+        MySQL.Sync.execute('DELETE FROM `faction_members` WHERE faction_id = @faction AND member = @member', {['@faction'] = faction, ['@member'] = auteur})
     end
 end)
