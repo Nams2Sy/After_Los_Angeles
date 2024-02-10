@@ -1,52 +1,157 @@
 local build
+local flashlightObject = nil
+local prop = nil
+local distance = 3
+local up = 0
+local confirm = false
 
-local prop = nil -- Déclarer la variable en dehors de la boucle pour qu'elle soit accessible globalement
+NetworkOverrideClockTime(12, 0, 0)
 
 Citizen.CreateThread(function()
     while true do
         Wait(0)
-        if build then
-            if not prop then
-                -- Si la porte n'a pas encore été créée, la créer
-                local coords = GetEntityCoords(PlayerPedId())
-                local forwardVector = GetEntityForwardVector(PlayerPedId())
-                local offset = 3
-                local pos = coords + forwardVector * offset
-                RequestModel("prop_door_01")
-                while not HasModelLoaded("prop_door_01") do
-                    Wait(500)
-                end
-                -- Créer le prop à la position spécifiée
-                prop = CreateObject("prop_door_01", pos.x, pos.y, pos.z, true, true, true)
-                -- Rendre la porte transparente (remplacez "mp_f_freemode_01" par le modèle de votre choix si nécessaire)
-                SetEntityAlpha(prop, 150, false)
-                -- Libérer le modèle maintenant qu'il est chargé
-                SetModelAsNoLongerNeeded("prop_door_01")
-                FreezeEntityPosition(prop,true)
-            else
-                -- Si la porte existe déjà, la mettre à jour pour suivre les mouvements du joueur
-                local coords = GetEntityCoords(PlayerPedId())
-                local forwardVector = GetEntityForwardVector(PlayerPedId())
-                local offset = 3
-                local pos = coords + forwardVector * offset
-                SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
-                FreezeEntityPosition(prop,true)
+        if prop then
+            if IsControlPressed(0, 73) then
+                build = nil
             end
-        elseif prop then
-            -- Si le mode "build" est désactivé et que la porte existe, la supprimer
-            DeleteEntity(prop)
-            prop = nil -- Réinitialiser la variable
+            if IsControlJustReleased(0, 191) then
+                confirm = true
+            end
+            local pos = GetEntityCoords(prop)
+            local playerpos = GetEntityCoords(PlayerPedId())
+            if IsControlPressed(0, 174) then
+                pos = vec3(pos.x-0.03, pos.y, pos.z)
+                if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                    SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                end
+            end
+            if IsControlPressed(0, 175) then
+                pos = vec3(pos.x+0.03, pos.y, pos.z)
+                if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                    SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                end
+            end
+            if IsControlPressed(0, 172) then
+                if IsControlPressed(0, 348) then
+                    pos = vec3(pos.x, pos.y, pos.z+0.03)
+                    if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                        SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                    end
+                else
+                    pos = vec3(pos.x, pos.y+0.03, pos.z)
+                    if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                        SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                    end
+                end
+            end
+            if IsControlPressed(0, 173) then
+                if IsControlPressed(0, 348) then
+                    pos = vec3(pos.x, pos.y, pos.z-0.03)
+                    if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                        SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                    end
+                else
+                    pos = vec3(pos.x, pos.y-0.03, pos.z)
+                    if GetDistanceBetweenCoords(pos.x, pos.y, pos.z, playerpos.x, playerpos.y, playerpos.z, true) < 3.5 then
+                        SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                    end
+                end
+            end
+            if IsControlPressed(0, 348) then
+                
+            end
+            if IsControlPressed(0, 96) then
+                SetEntityHeading(prop, GetEntityHeading(prop)+2)
+            end
+            if IsControlPressed(0, 97) then
+                SetEntityHeading(prop, GetEntityHeading(prop)-2)
+            end
+
         end
     end
-
 end)
-
-RegisterCommand("build", function(source, args, rawCommand)
-    if build then
-        build = false
-    else
-        build = true
+Citizen.CreateThread(function()
+    local interval = 500
+    while true do
+        Wait(interval)
+        interval = 500
+        if build then
+            interval = 0
+            if not prop then
+                local coords = GetEntityCoords(PlayerPedId())
+                local forwardVector = GetEntityForwardVector(PlayerPedId())
+                local offset = 3
+                local pos = coords + forwardVector * offset
+                RequestModel(build.name)
+                while not HasModelLoaded(build.name) do
+                    Wait(500)
+                end
+                prop = CreateObject(build.name, pos.x, pos.y, pos.z, false, true, true)
+                SetEntityAlpha(prop, 150, false)
+                SetModelAsNoLongerNeeded(build.name)
+                FreezeEntityPosition(prop, true)
+                SetEntityCollision(prop, false, false)
+                flashlightObject = CreateObject(GetHashKey(build.name), pos.x, pos.y, pos.z, true, true, true)
+                AttachEntityToEntity(flashlightObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 18905), 0.12, 0.03, 0.0, 0.0, 180.0, 0.0, true, true, false, true, 1, true)
+            else
+                local coords = GetEntityCoords(PlayerPedId())
+                if GetDistanceBetweenCoords(GetEntityCoords(prop).x, GetEntityCoords(prop).y, GetEntityCoords(prop).z, coords.x, coords.y, coords.z, true) >= 3.5 then
+                    local forwardVector = GetEntityForwardVector(PlayerPedId())
+                    local offset = distance
+                    local pos = coords + forwardVector * offset
+                    local groundZ, groundZ2 = GetGroundZAndNormalFor_3dCoord(pos.x, pos.y, pos.z)
+                    local pos = vec3(pos.x, pos.y, up+groundZ2)
+                    SetEntityCoordsNoOffset(prop, pos.x, pos.y, pos.z, true, true, true)
+                end
+                FreezeEntityPosition(prop, true)
+                SetEntityCollision(prop, false, false)
+                if confirm == true then
+                    confirm = false
+                    ESX.TriggerServerCallback('grvsc_faction:getFaction', function(faction)
+                        faction = faction[1]
+                        ESX.TriggerServerCallback('grvsc_faction:getPlayer', function(player)
+                            player = player[1]
+                            local position = {
+                                faction = json.decode(faction.coords),
+                                entity = GetEntityCoords(prop)
+                            }
+                            local distance = GetDistanceBetweenCoords(position.faction.x, position.faction.y, position.faction.z, position.entity.x, position.entity.y, position.entity.z, false)
+                            if distance > tonumber(faction.distance) then
+                                DeleteEntity(flashlightObject)
+                                DeleteEntity(prop)
+                                build = nil
+                                prop = nil
+                                return
+                            end
+                            ResetEntityAlpha(prop, 0, false)
+                            SetEntityCollision(prop, true, true)
+                            DeleteEntity(flashlightObject)
+                            exports.ox_inventory:useItem(build.data, function(data)
+                            end)
+                            build['data'] = nil
+                            TriggerServerEvent('grvsc_faction:addProp', player.member, faction.id, build, GetEntityCoords(prop), GetEntityHeading(prop))
+                            build = nil
+                        end)
+                    end)
+                end
+            end
+        elseif prop then
+            DeleteEntity(prop)
+            DeleteEntity(flashlightObject)
+            prop = nil
+        end
     end
-end,false)
-
-print('script load')
+end)
+Citizen.CreateThread(function()
+    local allItem = exports.ox_inventory:Items()
+    for k,v in pairs(allItem) do
+        if v.metadata then
+            if v.metadata.placable == true then
+                exports(v.name, function(data, slot)
+                    build = v.metadata
+                    build['data'] = data
+                end)
+            end
+        end
+    end
+end)

@@ -1,9 +1,11 @@
+NetworkOverrideClockTime(0, 0, 0)
+
 Citizen.CreateThread(function()
     SetWeatherTypePersist("HALLOWEEN")
     SetWeatherTypeNowPersist("HALLOWEEN")
     SetWeatherTypeNow("HALLOWEEN")
-    SetArtificialLightsState(true)
-    SetArtificialLightsStateAffectsVehicles(true)
+    --SetArtificialLightsState(true)
+    -- SetArtificialLightsStateAffectsVehicles(true)
     SetTimecycleModifier("RED")
     SetTransitionTimecycleModifier("RED", 0.0)
 end)

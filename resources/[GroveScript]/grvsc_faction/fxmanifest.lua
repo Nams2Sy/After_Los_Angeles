@@ -15,7 +15,8 @@ server_scripts {
 client_scripts {
     'client.lua',
     'config.lua',
-    'build.lua'
+    'build.lua',
+    'props.lua'
 }
 
 shared_scripts {

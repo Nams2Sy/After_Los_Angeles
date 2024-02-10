@@ -7,6 +7,10 @@ local keybind = lib.addKeybind({
     end,
 })
 
+RegisterCommand('open', function()
+    exports.ox_inventory:openInventory('stash', {id='test'})
+end,false)
+
 Citizen.CreateThread(function()
     local blipzone
     local blip
