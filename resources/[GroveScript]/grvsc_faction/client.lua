@@ -1,3 +1,5 @@
+ESX = exports["es_extended"]:getSharedObject()
+
 local keybind = lib.addKeybind({
     name = 'faction',
     description = 'Ouvrir le menu des factions',
@@ -517,21 +519,38 @@ end
 
 function claimZone(faction, coords)
     ESX.TriggerServerCallback('grvsc_faction:getFaction', function(result)
-        result = result[1]
-        if result.coords then
-            local alert = lib.alertDialog({
-                header = 'Réfléchissez bien avant de faire ceci',
-                content = 'Cela supprimmera définitivement toute les constructions présente sur votre térritoire',
-                centered = true,
-                cancel = true
-            })
-            if alert == 'confirm' then
-                TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
-            end 
-        else
-            TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
-        end
-        openFaction('main')
+        ESX.TriggerServerCallback('grvsc_faction:getAllFaction', function(result) 
+            local claim = true
+            if result then
+                for _, v in pairs(result) do
+                    if v.coords then
+                        v.coords = json.decode(v.coords)
+                        local f_coords = vec3(v.coords.x, v.coords.y, v.coords.z)
+                        local p_coords = GetEntityCoords(PlayerPedId())
+                        if GetDistanceBetweenCoords(f_coords.x, f_coords.y, f_coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 300 then
+                            claim = false
+                        end
+                    end
+                end
+            end
+            if claim then
+                result = result[1]
+                if result.coords then
+                    local alert = lib.alertDialog({
+                        header = 'Réfléchissez bien avant de faire ceci',
+                        content = 'Cela supprimmera définitivement toute les constructions présente sur votre térritoire',
+                        centered = true,
+                        cancel = true
+                    })
+                    if alert == 'confirm' then
+                        TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
+                    end 
+                else
+                    TriggerServerEvent('grvsc_faction:newClaim', faction, coords)
+                end
+            end
+            openFaction('main')
+        end)
     end)
 end
 

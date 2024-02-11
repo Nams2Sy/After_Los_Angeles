@@ -52,6 +52,14 @@ ESX.RegisterServerCallback('grvsc_faction:getItem', function(source, cb, item)
     local count = exports.ox_inventory:GetItemCount(source, item)
     cb(count)
 end)
+ESX.RegisterServerCallback('grvsc_faction:getProps', function(source, cb, faction_id)
+    local props = MySQL.Sync.fetchAll('SELECT * FROM faction_props WHERE faction_id = @faction_id', {['@faction_id'] = faction_id})
+    cb(props)
+end)
+ESX.RegisterServerCallback('grvsc_faction:getProp', function(source, cb, id)
+    local prop = MySQL.Sync.fetchScalar('SELECT data FROM faction_props WHERE id = @id', {['@id'] = id})
+    cb(prop)
+end)
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
     local source = source
@@ -224,10 +232,10 @@ end)
 RegisterNetEvent('grvsc_faction:addMember')
 AddEventHandler('grvsc_faction:addMember', function(auteur, target, name, faction)
     local source = source
-    local allmember = MySQL.Sync.fetchAll("SELECT id FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
-    local maxmember = MySQL.Sync.fetchAll("SELECT max_players FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
-    if allmember < maxmember then
-        local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    local allmember = MySQL.Sync.fetchAll("SELECT member FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
+    local maxmember = MySQL.Sync.fetchScalar("SELECT max_players FROM faction_list WHERE id = @faction", {['@faction'] = faction})
+    if #allmember < maxmember then
+        local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction, ['@member'] = auteur})
         local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction})
         permissions = json.decode(permissions)
         if permissions[gradeauteur].recruit == true then
@@ -239,11 +247,12 @@ AddEventHandler('grvsc_faction:addMember', function(auteur, target, name, factio
                         if not exist then
                             MySQL.Sync.execute("INSERT INTO `faction_members`(`member`, `grade`, `faction_id`, `member_name`) VALUES (@member,@grade,@id,@name)", {['@member'] = player.identifier,['@grade'] = k ,['@id'] = faction, ['@name'] = name})
                             TriggerClientEvent('okokNotify:Alert', source, 'Recrutement effectué', 'Nous membre dans votre faction', 3000, 'success', true)
+                            return
                         else
                             TriggerClientEvent('okokNotify:Alert', source, 'Recrutement impossible', 'Ce membre est déjà dans une faction', 3000, 'denied', true)
+                            return
                         end
                     end
-                    break
                 end
             end
             TriggerClientEvent('okokNotify:Alert', source, 'Contactez un administrateur', 'Aucun grade par defaut n\'a pu être trouvé', 3000, 'error', true)
@@ -334,16 +343,10 @@ AddEventHandler('grvsc_faction:addProp', function(auteur, faction_id, prop, coor
     local max_props = MySQL.Sync.fetchScalar("SELECT max_props FROM faction_list WHERE id = @faction", {['@faction'] = faction_id})
     permissions = json.decode(permissions)
     if permissions[gradeauteur].builddestroy then
-        local props = MySQL.Sync.fetchScalar("SELECT props FROM faction_list WHERE id = @faction", {['@faction'] = faction_id})
-        if props then
-            props = json.decode(props)
-        else
-            props = {}
-        end
-        if max_props > #props then
-            props[#props+1] = {data = prop, coords = coords, heading = heading}
-            props = json.encode(props)
-            MySQL.Sync.execute("UPDATE `faction_list` SET `props`='"..props.."' WHERE id="..faction_id.."")
+        local propsNumber = MySQL.Sync.fetchAll("SELECT * FROM faction_props WHERE faction_id = @faction", {['@faction'] = faction_id})
+        if max_props > #propsNumber then
+            prop = json.encode(prop)
+            MySQL.Sync.execute("INSERT INTO `faction_props`(`faction_id`, `data`, `coords`, `heading`) VALUES ("..faction_id..",'"..prop.."','"..coords.."',"..heading..")")
             TriggerClientEvent('okokNotify:Alert', source, 'Construction effectué', 'Nouvelle fabrication', 3000, 'success', true)
         else
             exports.ox_inventory:AddItem(source, prop.name, 1)
@@ -354,57 +357,38 @@ AddEventHandler('grvsc_faction:addProp', function(auteur, faction_id, prop, coor
     end
 end)
 RegisterNetEvent('grvsc_faction:removeProp')
-AddEventHandler('grvsc_faction:removeProp', function(auteur, faction_id, coords)
+AddEventHandler('grvsc_faction:removeProp', function(auteur, faction_id, id)
     local source = source
     local gradeauteur = MySQL.Sync.fetchScalar("SELECT grade FROM faction_members WHERE faction_id = @faction AND member = @member", {['@faction'] = faction_id, ['@member'] = auteur})
     local permissions = MySQL.Sync.fetchScalar("SELECT permissions FROM faction_list WHERE id = @faction", {['@faction'] = faction_id})
     permissions = json.decode(permissions)
     if permissions[gradeauteur].builddestroy then
-        local props = MySQL.Sync.fetchScalar("SELECT props FROM faction_list WHERE id = @faction", {['@faction'] = faction_id})
-        props = json.decode(props)
-        for k, v in pairs(props) do
-            v.coords = vec3(v.coords.x,v.coords.y, v.coords.z)
-            coords = vec3(coords.x,coords.y, coords.z)
-            if v.coords == coords then
-                exports.ox_inventory:AddItem(source, v.data.name, 1)
-                props[k] = nil
-            end
-        end
-        if #props > 0 then
-            props = json.encode(props)
-            MySQL.Sync.execute("UPDATE `faction_list` SET `props`='"..props.."' WHERE id="..faction_id.."")
-        else
-            MySQL.Sync.execute("UPDATE `faction_list` SET `props`=NULL WHERE id="..faction_id.."")
-        end
+        MySQL.Sync.execute("DELETE FROM `faction_props` WHERE id = @id", {['@id'] = id.id})
+        exports.ox_inventory:AddItem(source, id.data.name, 1)
         TriggerClientEvent('okokNotify:Alert', source, 'Construction récupéré', 'Vous avez démonter un objet', 3000, 'success', true)
     else
         TriggerClientEvent('okokNotify:Alert', source, 'Permissions refusé', 'Vous ne pouvez pas récupérer cette construction', 3000, 'denied', true)
     end
 end)
 RegisterNetEvent('grvsc_faction:updateProp')
-AddEventHandler('grvsc_faction:updateProp', function(dataProp, faction_id)
-    local props = MySQL.Sync.fetchScalar("SELECT props FROM faction_list WHERE id = @faction", {['@faction'] = faction_id})
-    props = json.decode(props)
-    if props then
-        for k, v in pairs(props) do
-            local pos = {
-                pos1 = vec3(v.coords.x, v.coords.y, v.coords.z),
-                pos2 = vec3(dataProp.coords.x, dataProp.coords.y, dataProp.coords.z),
-            }
-            if pos[1] == pos[2] then
-                if v.name == dataProp.name then
-                    props[k] = dataProp
-                end
-            end
+AddEventHandler('grvsc_faction:updateProp', function(dataProp)
+    if dataProp then
+        local propsExist = MySQL.Sync.fetchScalar("SELECT * FROM faction_props WHERE id = @id", {['@id'] = dataProp.id})
+        if propsExist then
+            local data = json.encode(dataProp.data)
+            local coords = json.encode(dataProp.coords)
+            local heading = json.encode(dataProp.heading)
+            MySQL.Sync.execute("UPDATE `faction_props` SET `data`='"..data.."', `coords`='"..coords.."', `heading`="..heading.." WHERE id="..dataProp.id.."")
         end
     end
-    props = json.encode(props)
-    MySQL.Sync.execute("UPDATE `faction_list` SET `props`='"..props.."' WHERE id="..faction_id.."")
 end)
-
-
-
-exports.ox_inventory:RegisterStash('test', 'Faction', 10, 10000)
+RegisterNetEvent('grvsc_faction:checkStash')
+AddEventHandler('grvsc_faction:checkStash', function(id)
+    local inventory = exports.ox_inventory:GetInventory('chest:'..id)
+    if not inventory then
+        exports.ox_inventory:RegisterStash('chest:'..id, 'Coffre', 10, 10000)
+    end
+end)
 
 -- local props = MySQL.Sync.fetchScalar('SELECT props FROM faction_list WHERE id = 25')
 -- props = json.decode(props)

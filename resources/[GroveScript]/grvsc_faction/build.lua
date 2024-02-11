@@ -107,42 +107,74 @@ Citizen.CreateThread(function()
                 SetEntityCollision(prop, false, false)
                 if confirm == true then
                     confirm = false
-                    ESX.TriggerServerCallback('grvsc_faction:getItem', function(result)
-                        if result > 0 then
-                            ESX.TriggerServerCallback('grvsc_faction:getFaction', function(faction)
-                                faction = faction[1]
-                                ESX.TriggerServerCallback('grvsc_faction:getPlayer', function(player)
-                                    player = player[1]
-                                    local position = {
-                                        faction = json.decode(faction.coords),
-                                        entity = GetEntityCoords(prop)
-                                    }
-                                    local distance = GetDistanceBetweenCoords(position.faction.x, position.faction.y, position.faction.z, position.entity.x, position.entity.y, position.entity.z, false)
-                                    if distance > tonumber(faction.distance) then
-                                        DeleteEntity(flashlightObject)
-                                        DeleteEntity(prop)
+                    DeleteEntity(flashlightObject)
+                    if lib.progressBar({
+                        duration = 6000,
+                        label = 'Construction',
+                        useWhileDead = false,
+                        canCancel = true,
+                        disable = {
+                            move = true,
+                            car = true,
+                            combat = true,
+                            mouse = true,
+                            sprint = true,
+                        },
+                        anim = {
+                            dict = 'melee@large_wpn@streamed_core',
+                            clip = 'ground_attack_on_spot',
+                            flags = 49
+                        },
+                        prop = {
+                            model = 'prop_tool_hammer',
+                            pos = vec3(0.05, 0.07, 0),
+                            rot = vec3(-110, -90, 0.5)
+                        },
+                    }) then
+                        ESX.TriggerServerCallback('grvsc_faction:getItem', function(result)
+                            if result > 0 then
+                                ESX.TriggerServerCallback('grvsc_faction:getFaction', function(faction)
+                                    faction = faction[1]
+                                    ESX.TriggerServerCallback('grvsc_faction:getPlayer', function(player)
+                                        player = player[1]
+                                        local position = {
+                                            faction = json.decode(faction.coords),
+                                            entity = GetEntityCoords(prop)
+                                        }
+                                        local distance = GetDistanceBetweenCoords(position.faction.x, position.faction.y, position.faction.z, position.entity.x, position.entity.y, position.entity.z, false)
+                                        if distance > tonumber(faction.distance) then
+                                            DeleteEntity(prop)
+                                            build = nil
+                                            prop = nil
+                                            return
+                                        end
+                                        ResetEntityAlpha(prop, 0, false)
+                                        SetEntityCollision(prop, true, true)
+                                        exports.ox_inventory:useItem(build.data, function(data)
+                                        end)
+                                        build['data'] = nil
+                                        local pushCoords = {
+                                            ['x'] = GetEntityCoords(prop).x,
+                                            ['y'] = GetEntityCoords(prop).y,
+                                            ['z'] = GetEntityCoords(prop).z
+                                        }
+                                        pushCoords = json.encode(pushCoords)
+                                        if build.chest then
+                                            build.chest['password'] = 'nopassword' 
+                                        end
+                                        TriggerServerEvent('grvsc_faction:addProp', player.member, faction.id, build, pushCoords, GetEntityHeading(prop))
                                         build = nil
-                                        prop = nil
-                                        return
-                                    end
-                                    ResetEntityAlpha(prop, 0, false)
-                                    SetEntityCollision(prop, true, true)
-                                    DeleteEntity(flashlightObject)
-                                    exports.ox_inventory:useItem(build.data, function(data)
                                     end)
-                                    build['data'] = nil
-                                    TriggerServerEvent('grvsc_faction:addProp', player.member, faction.id, build, GetEntityCoords(prop), GetEntityHeading(prop))
-                                    build = nil
                                 end)
-                            end)
-                        else
-                            DeleteEntity(flashlightObject)
-                            DeleteEntity(prop)
-                            build = nil
-                            prop = nil
-                            return
-                        end
-                    end, build.data.name)
+                            else
+                                DeleteEntity(flashlightObject)
+                                DeleteEntity(prop)
+                                build = nil
+                                prop = nil
+                                return
+                            end
+                        end, build.data.name)
+                    end
                 end
             end
         elseif prop then
