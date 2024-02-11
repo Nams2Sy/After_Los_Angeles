@@ -13,7 +13,10 @@ return {
 		label = 'Portillon en bois',
 		metadata = {
 			placable = true,
-			door = true,
+			door = {
+				type = 'normal',
+				open = false
+			},
 			name = 'prop_fncres_08gatel'
 		},
 		client = {
@@ -28,17 +31,6 @@ return {
 		},
 		client = {
 			export = "grvsc_faction.prop_fncres_09a"
-		}
-	},
-	['prop_gate_airport_01'] = {
-		label = 'Grillage Porte',
-		metadata = {
-			placable = true,
-			name = 'prop_gate_airport_01',
-			door = true,
-		},
-		client = {
-			export = "grvsc_faction.prop_gate_airport_01"
 		}
 	},
 }

@@ -1,0 +1,63 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script src="./assets/js/mobiscroll.jquery.min.js"></script>
+    <script src="./assets/js/datedropper-jquery.js"></script>
+    <script src="./assets/js/script.js"></script>
+
+    <title>After-LS</title>
+</head>
+
+<body>
+    <div id="main">
+        <div class="logobox">
+            <img src="./assets/imgs/logo.png" alt="">
+        </div>
+        <h2>Bienvenue sur After-LS</h2>
+        <div class="form">
+            <div class="forminput">
+                <img src="./assets/imgs/success.svg" class="actioninput">
+                <input type="text" class="form-control text-input" placeholder="Nom" id="name">
+                <img src="./assets/imgs/user.svg" class="input_img">
+            </div>
+            <div class="forminput">
+                <img src="./assets/imgs/success.svg" class="actioninput">
+                <input type="text" class="form-control text-input" placeholder="Prénom" id="lastname">
+                <img src="./assets/imgs/user.svg" class="input_img">
+            </div>
+            <div class="forminput">
+                <img src="./assets/imgs/success.svg" class="actioninput">
+
+                <input type="text" class="form-control" placeholder="Data de naissance" id="datepicker">
+                <img src="./assets/imgs/date.svg" class="input_img">
+            </div>
+
+            <div class="forminput" id="genderbox" data-gender="male">
+                <div class="gender" id="female"><img src="./assets/imgs/female.svg" alt="">Femme</div>
+                <div class="gender active" id="male"><img src="./assets/imgs/male.svg" alt="">Homme</div>
+            </div>
+            <div class="forminput">
+                <img src="./assets/imgs/success.svg" class="actioninput">
+                <input type="number" class="form-control" placeholder="Votre taille" id="height">
+                <img src="./assets/imgs/height.svg" class="input_img">
+            </div>
+        </div>
+        <button class="btn" id="register"><img src="./assets/imgs/signup.svg"> Tentez ma chance..</button>
+    </div>
+    <div class="toast">
+        <p id="toastmsg">Bienvenue sur After-LS</p>
+    </div>
+    <div class="visible" style="display: none; right: 90px; opacity: 0;">
+        <img src="./assets/imgs/puff.svg">
+        <span>Authentification...</span>
+    </div>
+</body>
+
+</html>

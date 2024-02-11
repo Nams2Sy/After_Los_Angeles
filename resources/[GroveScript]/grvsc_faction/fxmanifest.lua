@@ -27,7 +27,8 @@ dependencies {
     'ox_lib',
     'es_extended',
     'oxmysql',
-    'ox_inventory'
+    'ox_inventory',
+    'okokNotify'
 }
 
 files {

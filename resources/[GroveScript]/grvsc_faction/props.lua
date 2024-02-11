@@ -1,3 +1,4 @@
+movingDoor = {}
 entity = {}
 Citizen.CreateThread(function()
     while true do
@@ -9,11 +10,11 @@ Citizen.CreateThread(function()
                         v.coords = json.decode(v.coords)
                         local f_coords = vec3(v.coords.x, v.coords.y, v.coords.z)
                         local p_coords = GetEntityCoords(PlayerPedId())
-                        if GetDistanceBetweenCoords(f_coords.x, f_coords.y, f_coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 200 then
+                        if GetDistanceBetweenCoords(f_coords.x, f_coords.y, f_coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 150 then
                             local propList = json.decode(v.props)
                             for k, p in pairs(propList) do
                                 p_coords = GetEntityCoords(PlayerPedId())
-                                if GetDistanceBetweenCoords(p.coords.x, p.coords.y, p.coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 20 then
+                                if GetDistanceBetweenCoords(p.coords.x, p.coords.y, p.coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 110 then
                                     if not DoesEntityExist(entity[k]) then
                                         entity[k] = CreateObject(p.data.name, p.coords.x, p.coords.y, p.coords.z, false, true, true)
                                         SetEntityHeading(entity[k], p.heading)
@@ -25,7 +26,9 @@ Citizen.CreateThread(function()
                                     else
                                         local heading = GetEntityHeading(entity[k])
                                         if heading ~= p.heading then
-                                            SetEntityHeading(entity[k], p.heading)
+                                            if not movingDoor[entity[k]] then
+                                                SetEntityHeading(entity[k], p.heading)
+                                            end
                                         end
                                     end
                                 else
@@ -71,22 +74,35 @@ function addTargetProp(prop, dataProp)
                     iconColor = 'orange',
                     name = 'boxzone',
                     onSelect = function(data)
-                        if open then
-                            open = false
-                            local i = 90
-                            while i > 0 do
-                                Wait(6)
-                                SetEntityHeading(data.entity, GetEntityHeading(data.entity)+1)
-                                i = i-1
+                        if dataProp.data.door.type == 'normal' then
+                            if dataProp.data.door.open then
+                                dataProp.data.door.open = false
+                                local i = 90
+                                dataProp.heading = dataProp.heading+90
+                                movingDoor[data.entity] = true
+                                Citizen.CreateThread(function()
+                                    while i > 0 do
+                                        Wait(6)
+                                        SetEntityHeading(data.entity, GetEntityHeading(data.entity)+1)
+                                        i = i-1
+                                    end
+                                    movingDoor[data.entity] = false
+                                end)
+                            else
+                                dataProp.data.door.open = true
+                                local i = 90
+                                dataProp.heading = dataProp.heading-90
+                                movingDoor[data.entity] = true
+                                Citizen.CreateThread(function()
+                                    while i > 0 do
+                                        Wait(6)
+                                        SetEntityHeading(data.entity, GetEntityHeading(data.entity)-1)
+                                        i = i-1
+                                    end
+                                    movingDoor[data.entity] = false
+                                end)
                             end
-                        else
-                            open = true
-                            local i = 90
-                            while i > 0 do
-                                Wait(6)
-                                SetEntityHeading(data.entity, GetEntityHeading(data.entity)-1)
-                                i = i-1
-                            end
+                            TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
                         end
                     end
                 }

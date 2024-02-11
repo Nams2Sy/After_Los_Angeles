@@ -107,32 +107,42 @@ Citizen.CreateThread(function()
                 SetEntityCollision(prop, false, false)
                 if confirm == true then
                     confirm = false
-                    ESX.TriggerServerCallback('grvsc_faction:getFaction', function(faction)
-                        faction = faction[1]
-                        ESX.TriggerServerCallback('grvsc_faction:getPlayer', function(player)
-                            player = player[1]
-                            local position = {
-                                faction = json.decode(faction.coords),
-                                entity = GetEntityCoords(prop)
-                            }
-                            local distance = GetDistanceBetweenCoords(position.faction.x, position.faction.y, position.faction.z, position.entity.x, position.entity.y, position.entity.z, false)
-                            if distance > tonumber(faction.distance) then
-                                DeleteEntity(flashlightObject)
-                                DeleteEntity(prop)
-                                build = nil
-                                prop = nil
-                                return
-                            end
-                            ResetEntityAlpha(prop, 0, false)
-                            SetEntityCollision(prop, true, true)
-                            DeleteEntity(flashlightObject)
-                            exports.ox_inventory:useItem(build.data, function(data)
+                    ESX.TriggerServerCallback('grvsc_faction:getItem', function(result)
+                        if result > 0 then
+                            ESX.TriggerServerCallback('grvsc_faction:getFaction', function(faction)
+                                faction = faction[1]
+                                ESX.TriggerServerCallback('grvsc_faction:getPlayer', function(player)
+                                    player = player[1]
+                                    local position = {
+                                        faction = json.decode(faction.coords),
+                                        entity = GetEntityCoords(prop)
+                                    }
+                                    local distance = GetDistanceBetweenCoords(position.faction.x, position.faction.y, position.faction.z, position.entity.x, position.entity.y, position.entity.z, false)
+                                    if distance > tonumber(faction.distance) then
+                                        DeleteEntity(flashlightObject)
+                                        DeleteEntity(prop)
+                                        build = nil
+                                        prop = nil
+                                        return
+                                    end
+                                    ResetEntityAlpha(prop, 0, false)
+                                    SetEntityCollision(prop, true, true)
+                                    DeleteEntity(flashlightObject)
+                                    exports.ox_inventory:useItem(build.data, function(data)
+                                    end)
+                                    build['data'] = nil
+                                    TriggerServerEvent('grvsc_faction:addProp', player.member, faction.id, build, GetEntityCoords(prop), GetEntityHeading(prop))
+                                    build = nil
+                                end)
                             end)
-                            build['data'] = nil
-                            TriggerServerEvent('grvsc_faction:addProp', player.member, faction.id, build, GetEntityCoords(prop), GetEntityHeading(prop))
+                        else
+                            DeleteEntity(flashlightObject)
+                            DeleteEntity(prop)
                             build = nil
-                        end)
-                    end)
+                            prop = nil
+                            return
+                        end
+                    end, build.data.name)
                 end
             end
         elseif prop then

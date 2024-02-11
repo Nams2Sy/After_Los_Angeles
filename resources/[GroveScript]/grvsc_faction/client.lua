@@ -69,8 +69,12 @@ Citizen.CreateThread(function()
                     end
                 end
             else
-                RemoveBlip(blip)
-                RemoveBlip(blipzone)
+                if blip then
+                    RemoveBlip(blip)
+                end
+                if blipzone then
+                    RemoveBlip(blipzone)
+                end
             end
         end)
     end
@@ -397,7 +401,7 @@ function openFaction(info)
                                         icon = 'user-plus',
                                         iconColor = 'green',
                                         onSelect = function()
-                                            local input = lib.inputDialog('Recrutement de faction', {
+                                            local input = lib.inputDialog('Recrutement faction', {
                                                 {type = 'input', label = 'Quel nom voulez vous lui attribué ?', description = 'Ce nom sera visible par les membres de votre faction', required = true, min = 2, max = 16},
                                               })
                                             if input then
