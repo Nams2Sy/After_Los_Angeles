@@ -1,5 +1,3 @@
-NetworkOverrideClockTime(19, 0, 0)
-
 Citizen.CreateThread(function()
     while true do
         Wait(1000)

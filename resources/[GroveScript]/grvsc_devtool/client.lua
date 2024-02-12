@@ -1,3 +1,38 @@
+local rope = nil
+
+-- Fonction pour dessiner une ligne entre deux points
+function DrawRope(x1, y1, z1, x2, y2, z2)
+    local ped = GetPlayerPed(-1)
+
+    local ropeCoords = {
+        x1, y1, z1 - 0.95, -- Point A
+        x2, y2, z2 - 0.95, -- Point B
+    }
+
+    local ropeEntity = Citizen.InvokeNative(0xFAA599A0353810D7, 2, ropeCoords, 7, 0, 0)
+
+    return ropeEntity
+end
+
+-- Commande pour activer la corde
+RegisterCommand('activercorde', function()
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    local x2 = playerCoords.x + 2.0
+
+    -- Dessine la corde entre le joueur et x+2
+    rope = DrawRope(playerCoords.x, playerCoords.y, playerCoords.z, x2, playerCoords.y, playerCoords.z)
+end, false)
+
+-- Commande pour désactiver la corde
+RegisterCommand('desactivercorde', function()
+    if rope then
+        -- Supprime la corde
+        DeleteEntity(rope)
+        rope = nil
+    end
+end, false)
+
+
 -- Enregistrez votre animation dans le fichier animations.meta de votre resource.
 RegisterCommand("anim", function()
     RequestAnimDict("missbigscore2aig_3")
@@ -41,17 +76,13 @@ RegisterCommand("spawnPeds", function()
         SetPedMovementClipset(ped, walk, 1.5)
     end
 end, false)
-
-
 RegisterCommand('light', function(source, args, rawCommand)
+    local pos = GetEntityCoords(PlayerPedId())
     while true do
         Wait(0)
-        local pos = GetEntityCoords(PlayerPedId())
-        DrawLightWithRangeAndShadow(pos.x, pos.y, pos.z + 2, 255, 0, 0, 10.0, 100.0, 1.0)
+        DrawLightWithRangeAndShadow(pos.x, pos.y, pos.z + 5, 255, 230, 200, 10.0, 5.0, 1.0)
     end
 end, false)
-
-
 
 
 function showParticle(particle, loop, distance, scale)
