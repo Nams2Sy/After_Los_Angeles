@@ -54,7 +54,7 @@ if Config.debug then
                 local vehCoords = GetEntityCoords(veh)
     
                 local nearestRoad = GetNearestRoadDistance()
-                Draw3DText(vehCoords + vector3(0.0, 0.0, -0.3), '~w~Closest road: ' .. nearestRoad)
+                Draw3DText(vehCoords + vector3(0.0, 0.0, -0.3), '~w~Route la plus proche: ' .. nearestRoad)
                 
                 
                 local zoneHash = GetNameOfZone(vehCoords)
@@ -66,7 +66,7 @@ if Config.debug then
                 end
 
                 if IsSnowy() then
-                    Draw3DText(vehCoords + vector3(0.0, 2.0, 0.0), '~w~Snowy')
+                    Draw3DText(vehCoords + vector3(0.0, 2.0, 0.0), '~w~Enneigé')
                 end
 
                 Draw3DText(vehCoords + vector3(0.0, 0.0, -0.4), '~b~Traction: ' .. (CURRENT_TRACTION or 100))
@@ -74,7 +74,7 @@ if Config.debug then
                 local isBlacklistedArea, blacklistArea = IsInBlacklistedArea(veh)
                 if isBlacklistedArea then
                     DrawSphere(blacklistArea.coords, blacklistArea.radius, 200, 0, 0, 0.5)
-                    Draw3DText(vehCoords - vector3(0.0, 0.0, -0.4), '~r~In blacklisted area')
+                    Draw3DText(vehCoords - vector3(0.0, 0.0, -0.4), '~r~Zone interdite')
                 end
 
                 for index = 0, GetVehicleNumberOfWheels(veh) -1 do

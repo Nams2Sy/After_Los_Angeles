@@ -98,12 +98,36 @@ function addTargetProp(prop, dataProp)
                 local permissions = json.decode(faction.permissions)
                 if permissions[player.grade].builddestroy then
                     target[#target + 1] = { 
-                        label = 'Supprimer le prop',
+                        label = 'Démolir l\'objet',
                         icon = 'fa-solid fa-trash',
                         iconColor = 'red',
                         name = 'boxzone',
                         onSelect = function(data)
-                            TriggerServerEvent('grvsc_faction:removeProp', player.member, faction.id, dataProp)
+                            if lib.progressBar({
+                                duration = 6000,
+                                label = 'Démolition',
+                                useWhileDead = false,
+                                canCancel = true,
+                                disable = {
+                                    move = true,
+                                    car = true,
+                                    combat = true,
+                                    mouse = true,
+                                    sprint = true,
+                                },
+                                anim = {
+                                    dict = 'melee@large_wpn@streamed_core',
+                                    clip = 'ground_attack_on_spot',
+                                    flags = 49
+                                },
+                                prop = {
+                                    model = 'prop_tool_hammer',
+                                    pos = vec3(0.05, 0.07, 0),
+                                    rot = vec3(-110, -90, 0.5)
+                                },
+                            }) then
+                                TriggerServerEvent('grvsc_faction:removeProp', player.member, faction.id, dataProp)
+                            end
                         end
                     }
                 end
@@ -111,7 +135,7 @@ function addTargetProp(prop, dataProp)
                     target[#target + 1] = { 
                         label = 'Modifier le code',
                         icon = 'fa-solid fa-key',
-                        iconColor = 'green',
+                        iconColor = 'orange',
                         name = 'boxzone',
                         onSelect = function(data)
                             ESX.TriggerServerCallback('grvsc_faction:getProp', function(result)

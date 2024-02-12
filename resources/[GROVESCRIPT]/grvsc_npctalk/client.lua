@@ -8,50 +8,33 @@ local inMenu = false
 local hasEntered = false
 
 Citizen.CreateThread(function()
-	while ESX.GetPlayerData().job == nil do
-		Citizen.Wait(10)
-	end
-	PlayerData = ESX.GetPlayerData()
-end)
-
--- CREATE NPCs
-
-Citizen.CreateThread(function()
 	local pedInfo = {}
 	local camCoords = nil
 	local camRotation = nil
-
 	for k, v in pairs(Config.TalkToNPC) do
 		RequestModel(GetHashKey(v.npc))
 		while not HasModelLoaded(GetHashKey(v.npc)) do
 			Wait(1)
 		end
-
 		RequestAnimDict("mini@strip_club@idles@bouncer@base")
 		while not HasAnimDictLoaded("mini@strip_club@idles@bouncer@base") do
 			Wait(1)
 		end
-
 		ped =  CreatePed(4, v.npc, v.coordinates[1], v.coordinates[2], v.coordinates[3], v.heading, false, true)
 		SetEntityHeading(ped, v.heading)
 		FreezeEntityPosition(ped, true)
 		SetEntityInvincible(ped, true)
 		SetBlockingOfNonTemporaryEvents(ped, true)
 		TaskPlayAnim(ped,"mini@strip_club@idles@bouncer@base","base", 8.0, 0.0, -1, 1, 0, 0, 0, 0)
-
 		if Config.AutoCamPosition then
 			local px, py, pz = table.unpack(GetEntityCoords(ped, true))
 			local x, y, z = px + GetEntityForwardX(ped) * 1.2, py + GetEntityForwardY(ped) * 1.2, pz + 0.52
-
 			camCoords = vector3(x, y, z)
 		end
-
 		if Config.AutoCamRotation then
 			local rx = GetEntityRotation(ped, 2)
-
 			camRotation = rx + vector3(0.0, 0.0, 181)
 		end
-
 		pedInfo = {
 			name = v.name,
 			model = v.npc,
@@ -60,12 +43,9 @@ Citizen.CreateThread(function()
 			camCoords = camCoords,
 			camRotation = camRotation,
 		}
-
 		table.insert(pedList, pedInfo)
 	end
 end)
-
--- CHECK DISTANCE & JOB
 
 Citizen.CreateThread(function()
 	local inZone = false
@@ -76,26 +56,20 @@ Citizen.CreateThread(function()
 	local npcModel = nil
 	local npcName = nil
 	local npcKey = 0
-	
 	while true do
 		Citizen.Wait(20)
 		local playerCoords = GetEntityCoords(PlayerPedId())
-		
 		inZone = false
 		nearPed = false
-
 		if npcName == nil and npcModel == nil then
 			for k,v in pairs(Config.TalkToNPC) do
 				local distance = GetDistanceBetweenCoords(playerCoords.x, playerCoords.y, playerCoords.z, v.coordinates[1], v.coordinates[2], v.coordinates[3])
-			
 				if v.jobs[1] ~= nil then
-
 					if distance < v.interactionRange + 2 then
 						npcName = v.name
 						npcModel = v.npc
 						npcKey = k
 						nearPed = true
-
 					elseif not waitMore and not nearPed then
 						waitMore = true
 					elseif checkedJob then
@@ -110,7 +84,6 @@ Citizen.CreateThread(function()
 						if not inMenu then
 							waitMore = false
 						end
-						
 					elseif not waitMore and not nearPed then
 						waitMore = true
 					end
@@ -121,13 +94,11 @@ Citizen.CreateThread(function()
 			if v ~= nil then
 				local distance = GetDistanceBetweenCoords(playerCoords.x, playerCoords.y, playerCoords.z, v.coordinates[1], v.coordinates[2], v.coordinates[3])
 				local zDistance = playerCoords.z - v.coordinates[3]
-				
 				if zDistance < 0 then
 					zDistance = zDistance * -1
 				end
 				if zDistance < 2 then
 					if v.jobs[1] ~= nil then
-
 						if distance < v.interactionRange + 3 then
 							if not checkedJob then
 								hasJob = false
@@ -244,9 +215,6 @@ Citizen.CreateThread(function()
 				end
 			end
 		end
-
-		
-
 		if inZone and not hasEntered then
 			if Config.UseOkokTextUI then
 				exports['okokTextUI']:Open('[E] To talk with '..name, 'darkblue', 'left') 
@@ -258,7 +226,6 @@ Citizen.CreateThread(function()
 			end
 			hasEntered = false
 		end 
-
 		if waitMore then
 			Citizen.Wait(1000)
 		end
@@ -278,7 +245,12 @@ RegisterNUICallback('action', function(data, cb)
 		if Config.UseOkokTextUI then
 			exports['okokTextUI']:Open('[E] To talk with '..name, 'darkblue', 'left') 
 		end
-		EndCam()
+		ClearFocus()
+		SetCamActive(cam, false)
+		RenderScriptCams(false, true, Config.CameraAnimationTime, true, false)
+		DestroyCam(cam, false)
+		DisplayRadar(true)
+		cam = nil
 		inMenu = false
 		waitMore = false
 	elseif data.action == 'option' then
@@ -290,10 +262,14 @@ RegisterNUICallback('action', function(data, cb)
 		if Config.UseOkokTextUI then
 			exports['okokTextUI']:Open('[E] To talk with '..name, 'darkblue', 'left') 
 		end
-		EndCam()
+		ClearFocus()
+		SetCamActive(cam, false)
+		RenderScriptCams(false, true, Config.CameraAnimationTime, true, false)
+		DestroyCam(cam, false)
+		DisplayRadar(true)
+		cam = nil
 		inMenu = false
 		waitMore = false
-
 		if data.options[3] == 'c' then
 			TriggerEvent(data.options[2])
 		elseif data.options[3] ~= nil then
@@ -306,7 +282,6 @@ end)
 
 function StartCam(coords, offset, rotation, model, name)
 	ClearFocus()
-
 	if Config.AutoCamRotation then
 		for k,v in pairs(pedList) do
 			if v.pedCoords == coords then
@@ -316,7 +291,6 @@ function StartCam(coords, offset, rotation, model, name)
 			end
 		end
 	end
-
 	if Config.AutoCamPosition then
 		for k,v in pairs(pedList) do
 			if v.pedCoords == coords then
@@ -328,34 +302,16 @@ function StartCam(coords, offset, rotation, model, name)
 	else
 		coords = coords + offset
 	end
-
 	cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", coords, rotation, GetGameplayCamFov())
-
 	SetCamActive(cam, true)
 	RenderScriptCams(true, true, Config.CameraAnimationTime, true, false)
 end
-
-function EndCam()
-	ClearFocus()
-
-	RenderScriptCams(false, true, Config.CameraAnimationTime, true, false)
-	DestroyCam(cam, false)
-
-	cam = nil
-end
-
-
-
-
-
-
-
 
 -- EXAMPLE EVENTS CALLED ON CONFIG.LUA
 
 RegisterNetEvent("okokTalk:toilet")
 AddEventHandler("okokTalk:toilet", function()
-	exports['okokNotify']:Alert("BANK", "On your right, sir.", 5000, 'info')
+	print('okkk')
 end)
 
 RegisterNetEvent("okokTalk:rob")

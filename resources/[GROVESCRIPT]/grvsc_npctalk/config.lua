@@ -8,7 +8,7 @@ Config.AutoCamRotation = true -- If true it'll set the camera rotation automatic
 
 Config.HideMinimap = true -- If true it'll hide the minimap when interacting with an NPC
 
-Config.UseOkokTextUI = true -- If true it'll use okokTextUI 
+Config.UseOkokTextUI = false -- If true it'll use okokTextUI 
 
 Config.CameraAnimationTime = 1000 -- Camera animation time: 1000 = 1 second
 

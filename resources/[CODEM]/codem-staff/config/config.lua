@@ -7,7 +7,7 @@ Config.Framework = 'esx' -- esx, qb, oldqb, oldesx, autodetect
 Config.Mysql = "oxmysql" 
 Config.WebhookFooter = {
     logo = "https://cdn.discordapp.com/attachments/1025789416456867961/1106324039808594011/512x512_Logo.png",
-    text = "Codem Store - https://discord.gg/zj3QsUfxWs"
+    text = "After-LS"
 }
 -- Open Menu Key
 
