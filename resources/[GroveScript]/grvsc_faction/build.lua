@@ -5,8 +5,6 @@ local distance = 3
 local up = 0
 local confirm = false
 
-NetworkOverrideClockTime(12, 0, 0)
-
 Citizen.CreateThread(function()
     while true do
         Wait(0)
@@ -109,7 +107,7 @@ Citizen.CreateThread(function()
                     confirm = false
                     DeleteEntity(flashlightObject)
                     if lib.progressBar({
-                        duration = 6000,
+                        duration = 60,
                         label = 'Construction',
                         useWhileDead = false,
                         canCancel = true,

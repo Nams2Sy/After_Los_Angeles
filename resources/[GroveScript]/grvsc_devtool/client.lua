@@ -78,11 +78,25 @@ RegisterCommand("spawnPeds", function()
 end, false)
 RegisterCommand('light', function(source, args, rawCommand)
     local pos = GetEntityCoords(PlayerPedId())
+    local heading = GetEntityHeading(PlayerPedId())
+    local headingRadians = math.rad(heading)
+    local dirX = math.sin(-headingRadians)
+    local dirY = math.cos(-headingRadians)
+    local dirZ = -0.4 -- Ajustez si nécessaire pour l'angle vertical
+    local colorR = 255
+    local colorG = 255
+    local colorB = 255
+    local distance = 30.0
+    local brightness = 5.0
+    local hardness = 2.0
+    local radius = 50.0
+    local falloff = 1.0
     while true do
         Wait(0)
-        DrawLightWithRangeAndShadow(pos.x, pos.y, pos.z + 5, 255, 230, 200, 10.0, 5.0, 1.0)
+        DrawSpotLight(pos.x, pos.y, pos.z, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness, hardness, radius, falloff)
     end
 end, false)
+
 
 
 function showParticle(particle, loop, distance, scale)

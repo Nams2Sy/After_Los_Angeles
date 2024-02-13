@@ -82,6 +82,7 @@ return {
 				watt =  250, -- Énergie fournie
 				maxfuel = 5, -- Réservoir d'essence en L
 				consum = 0.25, -- consommation par heure
+				active = false,
 			},
 			name = 'prop_generator_01a'
 		},
@@ -98,6 +99,7 @@ return {
 				watt =  600, -- Énergie fournie
 				maxfuel = 12, -- Réservoir d'essence en L
 				consum = 0.50, -- consommation par heure
+				active = false,
 			},
 			name = 'prop_generator_02a'
 		},
@@ -114,11 +116,37 @@ return {
 				watt =  1400, -- Énergie fournie
 				maxfuel = 25, -- Réservoir d'essence en L
 				consum = 0.95, -- consommation par heure
+				active = false,
 			},
 			name = 'prop_generator_04'
 		},
 		client = {
 			export = "grvsc_faction.prop_generator_04"
+		}
+	},
+
+	-- --- SOURCE DE LUMIERE --- --
+	['prop_worklight_03b'] = {
+		label = 'Lumière de chantier',
+		metadata = {
+			placable = true,
+			lamp = {
+				watt =  100, -- Énergie utilisé
+				brightness = 5.0, -- Force de la lumière
+				range = 30.0, -- Rayon de lumière
+				color = {
+					["r"] = 255,
+					["g"] = 230,
+					["b"] = 200,
+				},
+				orientation = -1.0,
+				headingAdjuster = 180,
+				ZoffsetAdjuster = 2,
+			},
+			name = 'prop_worklight_03b'
+		},
+		client = {
+			export = "grvsc_faction.prop_worklight_03b"
 		}
 	},
 

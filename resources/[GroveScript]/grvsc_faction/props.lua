@@ -1,6 +1,29 @@
 entity = {}
 openlast = {}
 opennow = {}
+light = {}
+Citizen.CreateThread(function()
+    while true do
+        Wait(0)
+        for k, v in pairs(light) do
+            -- Convertissez l'angle de direction en radians
+            local heading = v.heading+v.data.lamp.headingAdjuster
+            local headingRadians = math.rad(heading)
+            local dirX = math.sin(-headingRadians)
+            local dirY = math.cos(-headingRadians)
+            local dirZ = -0.4 -- Ajustez si nécessaire pour l'angle vertical
+            local colorR = v.data.lamp.color.r
+            local colorG = v.data.lamp.color.g
+            local colorB = v.data.lamp.color.b
+            local distance = 30.0
+            local brightness = v.data.lamp.brightness
+            local hardness = 2.0
+            local radius = v.data.lamp.range
+            local falloff = 1.0
+            DrawSpotLight(v.coords.x, v.coords.y, v.coords.z+v.data.lamp.ZoffsetAdjuster, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness, hardness, radius, falloff)
+        end
+    end
+end)
 Citizen.CreateThread(function()
     while true do
         Citizen.CreateThread(function()
@@ -9,6 +32,7 @@ Citizen.CreateThread(function()
                     if not propList then
                         DeleteEntity(entity[k])
                         entity[k] = nil
+                        light[k] = nil
                     end
                 end, k)
             end
@@ -23,12 +47,29 @@ Citizen.CreateThread(function()
                         local p_coords = GetEntityCoords(PlayerPedId())
                         if GetDistanceBetweenCoords(f_coords.x, f_coords.y, f_coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 150 then
                             ESX.TriggerServerCallback('grvsc_faction:getProps', function(propList)
+                                local energieMax = 0
+                                for k, g in pairs(propList) do
+                                    g.data = json.decode(g.data)
+                                    if g.data.generator then
+                                        if g.data.generator.active then
+                                            energieMax = energieMax+g.data.generator.watt
+                                        end
+                                    end
+                                end
                                 for k, p in pairs(propList) do
+                                    Wait(10)
                                     p_coords = GetEntityCoords(PlayerPedId())
-                                    p.data = json.decode(p.data)
                                     p.coords = json.decode(p.coords)
                                     p.coords = vec3(p.coords.x, p.coords.y, p.coords.z)
                                     if GetDistanceBetweenCoords(p.coords.x, p.coords.y, p.coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 110 then
+                                        if p.data.lamp then
+                                            if energieMax >= p.data.lamp.watt then
+                                                energieMax = energieMax - p.data.lamp.watt
+                                                light[p.id] = p
+                                            else
+                                                light[p.id] = nil
+                                            end
+                                        end
                                         if not DoesEntityExist(entity[p.id]) then
                                             entity[p.id] = CreateObject(p.data.name, p.coords.x, p.coords.y, p.coords.z, false, true, true)
                                             SetEntityHeading(entity[p.id], p.heading+0.1-0.1)
@@ -74,9 +115,9 @@ Citizen.CreateThread(function()
                                     else
                                         if DoesEntityExist(entity[p.id]) then
                                             DeleteEntity(entity[p.id])
-                                            entity[p.id] = nil
                                         end
                                         entity[p.id] = nil
+                                        light[p.id] = nil
                                     end
                                 end
                             end, v.id)
@@ -219,6 +260,23 @@ function addTargetProp(prop, dataProp)
                                     dataProp.heading = dataProp.heading-90
                                     TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
                                 end
+                            end
+                        end
+                    }
+                end
+                if dataProp.data.generator then
+                    target[#target + 1] = { 
+                        label = 'Allumer/Eteindre le générateur',
+                        icon = 'fa-solid fa-user-tie',
+                        iconColor = 'orange',
+                        name = 'boxzone',
+                        onSelect = function(data)
+                            if dataProp.data.generator.active then
+                                dataProp.data.generator.active = false
+                                TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
+                            else
+                                dataProp.data.generator.active = true
+                                TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
                             end
                         end
                     }
