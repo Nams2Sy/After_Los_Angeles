@@ -209,7 +209,7 @@ function addTargetProp(prop, dataProp)
                                         if input[1] == input[2] then
                                             dataProp.data.chest.password = input[2]
                                             TriggerServerEvent('grvsc_faction:updateProp', dataProp)
-                                            exports['okokNotify']:Alert('Modification effectué', 'Nouveau code de dévérouillage', 3000, 'success', true)
+                                            -- 
                                         else
                                             print('confirm false')
                                         end

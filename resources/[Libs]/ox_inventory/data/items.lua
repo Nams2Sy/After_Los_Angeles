@@ -63,8 +63,7 @@ return {
 		metadata = {
 			placable = true,
 			chest = {
-				weight = 15000,
-				slot = 20
+				weight = 15000,q
 			},
 			name = 'prop_ld_int_safe_01'
 		},

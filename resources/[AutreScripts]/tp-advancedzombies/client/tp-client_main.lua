@@ -503,7 +503,7 @@ AddEventHandler("tp-advancedzombies:onZombieSync", function()
     
                     until canSpawn
     
-                    local entity = CreatePed(4, GetHashKey(EntityModel), posX, posY, posZ, 0.0, false, false)
+                    local entity = CreatePed(4, GetHashKey(EntityModel), posX, posY, posZ, 0.0, true, false)
                     local entityMaxHealth = Config.ZombiePedModelsData[string.lower(EntityModel)].data.health
     
                     SetEntityHealth(entity, entityMaxHealth)

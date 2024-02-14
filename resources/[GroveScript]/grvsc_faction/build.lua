@@ -107,7 +107,7 @@ Citizen.CreateThread(function()
                     confirm = false
                     DeleteEntity(flashlightObject)
                     if lib.progressBar({
-                        duration = 60,
+                        duration = 6000,
                         label = 'Construction',
                         useWhileDead = false,
                         canCancel = true,
