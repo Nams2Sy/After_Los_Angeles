@@ -2,6 +2,28 @@ entity = {}
 openlast = {}
 opennow = {}
 light = {}
+gen = {}
+Citizen.CreateThread(function()
+    while true do
+        Wait(0)
+        for k, v in pairs(gen) do
+            local onScreen, _x, _y = World3dToScreen2d(v.coords.x, v.coords.y, v.coords.z+0.5)
+            SetTextScale(0.35, 0.35)
+            SetTextFont(4)
+            SetTextProportional(1)
+            SetTextColour(255, 255, 255, 215)
+            if onScreen then
+                SetTextDropshadow(0, 0, 0, 0, 255)
+                SetTextEdge(2, 0, 0, 0, 150)
+                SetTextDropShadow()
+                SetTextOutline()
+                SetTextEntry("STRING")
+                AddTextComponentString(v.text)
+                DrawText(_x, _y)
+            end
+        end
+    end
+end)
 Citizen.CreateThread(function()
     while true do
         Wait(0)
@@ -21,6 +43,14 @@ Citizen.CreateThread(function()
             local radius = v.data.lamp.range
             local falloff = 1.0
             DrawSpotLight(v.coords.x, v.coords.y, v.coords.z+v.data.lamp.ZoffsetAdjuster, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness, hardness, radius, falloff)
+            -- heading = v.heading
+            -- headingRadians = math.rad(heading)
+            -- dirX = math.sin(-headingRadians)
+            -- dirY = math.cos(-headingRadians)
+            -- local newX = v.coords.x - 2.5 * math.sin(math.rad(heading))
+            -- local newY = v.coords.y + 2.5 * math.cos(math.rad(heading))
+            -- DrawSpotLightWithShadow(newX, newY, v.coords.z+1.67, dirX, dirY, 0.0, colorR, colorG, colorB, distance, 20.0,  10.0, radius, falloff, 1.0)
+            -- DrawSpotLightWithShadow(v.coords.x, v.coords.y, v.coords.z+v.data.lamp.ZoffsetAdjuster, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness,  10.0, radius, falloff, 1.0)
         end
     end
 end)
@@ -33,6 +63,7 @@ Citizen.CreateThread(function()
                         DeleteEntity(entity[k])
                         entity[k] = nil
                         light[k] = nil
+                        gen[k] = nil
                     end
                 end, k)
             end
@@ -50,17 +81,36 @@ Citizen.CreateThread(function()
                                 local energieMax = 0
                                 for k, g in pairs(propList) do
                                     g.data = json.decode(g.data)
+                                    g.coords = json.decode(g.coords)
                                     if g.data.generator then
                                         if g.data.generator.active then
                                             energieMax = energieMax+g.data.generator.watt
+                                            gen[g.id] = {
+                                                coords = g.coords,
+                                                text = "~g~ Allumé [Reservoir: "..g.data.generator.fuel.."L/"..g.data.generator.maxfuel.."L]"
+                                            }
+                                        else
+                                            if g.data.generator.fuel > 0 then
+                                                gen[g.id] = {
+                                                    coords = g.coords,
+                                                    text = "~r~ Éteint"
+                                                }
+                                            else
+                                                gen[g.id] = {
+                                                    coords = g.coords,
+                                                    text = "~r~ Plus d\'essence"
+                                                }
+                                            end
+                                        end
+                                        if g.data.generator.fuel <= 0 then
+                                            g.data.generator.active = false
+                                            -- TriggerServerEvent('grvsc_faction:updateProp', g)
                                         end
                                     end
                                 end
                                 for k, p in pairs(propList) do
                                     Wait(10)
                                     p_coords = GetEntityCoords(PlayerPedId())
-                                    p.coords = json.decode(p.coords)
-                                    p.coords = vec3(p.coords.x, p.coords.y, p.coords.z)
                                     if GetDistanceBetweenCoords(p.coords.x, p.coords.y, p.coords.z, p_coords.x, p_coords.y, p_coords.z, true) < 110 then
                                         if p.data.lamp then
                                             if energieMax >= p.data.lamp.watt then
@@ -118,6 +168,7 @@ Citizen.CreateThread(function()
                                         end
                                         entity[p.id] = nil
                                         light[p.id] = nil
+                                        gen[p.id] = nil
                                     end
                                 end
                             end, v.id)
@@ -273,10 +324,10 @@ function addTargetProp(prop, dataProp)
                         onSelect = function(data)
                             if dataProp.data.generator.active then
                                 dataProp.data.generator.active = false
-                                TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
+                                TriggerServerEvent('grvsc_faction:updateProp', dataProp)
                             else
                                 dataProp.data.generator.active = true
-                                TriggerServerEvent('grvsc_faction:updateProp', dataProp, faction.id)
+                                TriggerServerEvent('grvsc_faction:updateProp', dataProp)
                             end
                         end
                     }

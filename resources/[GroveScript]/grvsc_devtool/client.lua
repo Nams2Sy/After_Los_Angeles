@@ -82,22 +82,42 @@ RegisterCommand('light', function(source, args, rawCommand)
     local headingRadians = math.rad(heading)
     local dirX = math.sin(-headingRadians)
     local dirY = math.cos(-headingRadians)
-    local dirZ = -0.4 -- Ajustez si nécessaire pour l'angle vertical
-    local colorR = 255
-    local colorG = 255
-    local colorB = 255
-    local distance = 30.0
-    local brightness = 5.0
-    local hardness = 2.0
-    local radius = 50.0
-    local falloff = 1.0
+    local dirZ = 0.0 -- Ajustez si nécessaire pour l'angle vertical
     while true do
         Wait(0)
-        DrawSpotLight(pos.x, pos.y, pos.z, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness, hardness, radius, falloff)
+        local colorR = 255
+        local colorG = 255
+        local colorB = 255
+        local distance = 30.0
+        local brightness = 20.0
+        local hardness = 2.0
+        local radius = 8.0
+        local falloff = 1.0
+        -- DrawSpotLight(pos.x, pos.y, pos.z, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness, hardness, radius, falloff)
+        DrawSpotLightWithShadow(pos.x, pos.y, pos.z+1.67, dirX, dirY, dirZ, colorR, colorG, colorB, distance, brightness,  10.0, radius, falloff, 1.0)
     end
 end, false)
 
-
+local keybind = lib.addKeybind({
+    name = 'particle',
+    description = 'particle test',
+    defaultKey = 'Y',
+    onPressed = function(self)
+        local input = lib.inputDialog('Hey', {
+            {type = 'input', label = 'Particle name', required = true, min = 1, max = 200},
+            {type = 'number', label = 'Loop', min = 2, max = 200},
+            {type = 'number', label = 'Distance', required = true, min = 2, max = 200, default = 5},
+            {type = 'number', label = 'Taille', required = true, min = 2, max = 200, default = 5.0},
+        })
+        if input then
+            if input[2] then
+                showParticle(input[1], input[2], input[3], input[4])
+            elseif input then
+                showParticle(input[1], 0, input[3], input[4])
+            end
+        end
+    end,
+})
 
 function showParticle(particle, loop, distance, scale)
     NetworkOverrideClockTime(12, 0, 0)

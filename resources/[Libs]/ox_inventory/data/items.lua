@@ -82,6 +82,7 @@ return {
 				maxfuel = 5, -- Réservoir d'essence en L
 				consum = 0.25, -- consommation par heure
 				active = false,
+				fuel = 0,
 			},
 			name = 'prop_generator_01a'
 		},
@@ -99,6 +100,7 @@ return {
 				maxfuel = 12, -- Réservoir d'essence en L
 				consum = 0.50, -- consommation par heure
 				active = false,
+				fuel = 0,
 			},
 			name = 'prop_generator_02a'
 		},
@@ -116,6 +118,7 @@ return {
 				maxfuel = 25, -- Réservoir d'essence en L
 				consum = 0.95, -- consommation par heure
 				active = false,
+				fuel = 0,
 			},
 			name = 'prop_generator_04'
 		},
