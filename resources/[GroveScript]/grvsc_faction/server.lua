@@ -60,6 +60,10 @@ ESX.RegisterServerCallback('grvsc_faction:getProp', function(source, cb, id)
     local prop = MySQL.Sync.fetchScalar('SELECT data FROM faction_props WHERE id = @id', {['@id'] = id})
     cb(prop)
 end)
+ESX.RegisterServerCallback('grvsc_faction:getFuelItem', function(source, cb)
+    local item = exports.ox_inventory:GetItem(source, 'WEAPON_PETROLCAN')
+    cb(item.count)
+end)
 RegisterNetEvent('grvsc_faction:createFaction')
 AddEventHandler('grvsc_faction:createFaction', function(name, blip, color)
     local source = source
@@ -389,25 +393,33 @@ AddEventHandler('grvsc_faction:checkStash', function(id)
         exports.ox_inventory:RegisterStash('chest:'..id, 'Coffre', 10, 10000)
     end
 end)
+RegisterNetEvent('grvsc_faction:addFuel')
+AddEventHandler('grvsc_faction:addFuel', function(prop, fuel)
+    exports.ox_inventory:RemoveItem(source, 'WEAPON_PETROLCAN', 1)
+    TriggerEvent('grvsc_faction:updateProp', prop)
+end)
 
--- local props = MySQL.Sync.fetchScalar('SELECT props FROM faction_list WHERE id = 25')
--- props = json.decode(props)
--- for k, v in pairs(props) do
---     print(k, v.name, v.coords)
--- end
--- local props = {}
--- local i = 200
--- while i > 0 do
---     i = i-1
---     Wait(0)
---     table.insert(props, 
---         {
---             name = 'prop_air_watertank2',
---             coords = vec3(0, 0, 0)
---         }
-    
---     )
--- end
--- props = json.encode(props)
--- MySQL.Async.execute("UPDATE `faction_list` SET `props`='"..props.."' WHERE id=25")
--- print('finish')
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+Citizen.CreateThread(function()
+    while true do
+        Wait(60000)
+        local props = MySQL.Sync.fetchAll("SELECT * FROM faction_props")
+        for k, v in pairs(props) do
+            v.data = json.decode(v.data)
+            if v.data.generator then
+                if v.data.generator.active then
+                    v.data.generator.fuel = round(v.data.generator.fuel-v.data.generator.consum/60, 2)
+                    if v.data.generator.fuel <= 0 then
+                        v.data.generator.fuel = 0
+                        v.data.generator.active = false
+                    end
+                    v.coords = json.decode(v.coords)
+                    TriggerEvent('grvsc_faction:updateProp', v)
+                end
+            end
+        end
+    end
+end)

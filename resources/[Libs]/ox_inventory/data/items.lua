@@ -164,5 +164,12 @@ return {
 	['kq_winch'] = {
 		label = 'Treuil',
 	},
-
+	['WEAPON_PETROLCAN'] = {
+		label = 'Baril d\'essence',
+		description = 'Bidon d\'essence de 5 litres',
+		weight = 5520,
+		metadata = {
+			reservoir = 5, -- Contenant d'essence en litre 
+		}
+	}
 }

@@ -7,19 +7,23 @@ Citizen.CreateThread(function()
     while true do
         Wait(0)
         for k, v in pairs(gen) do
-            local onScreen, _x, _y = World3dToScreen2d(v.coords.x, v.coords.y, v.coords.z+0.5)
-            SetTextScale(0.35, 0.35)
-            SetTextFont(4)
-            SetTextProportional(1)
-            SetTextColour(255, 255, 255, 215)
-            if onScreen then
-                SetTextDropshadow(0, 0, 0, 0, 255)
-                SetTextEdge(2, 0, 0, 0, 150)
-                SetTextDropShadow()
-                SetTextOutline()
-                SetTextEntry("STRING")
-                AddTextComponentString(v.text)
-                DrawText(_x, _y)
+            local coords = GetEntityCoords(PlayerPedId())
+            local distance = GetDistanceBetweenCoords(coords.x, coords.y, coords.z, v.coords.x, v.coords.y, v.coords.z, true)
+            if distance < 3 then
+                local onScreen, _x, _y = World3dToScreen2d(v.coords.x, v.coords.y, v.coords.z+0.5)
+                SetTextScale(0.35, 0.35)
+                SetTextFont(4)
+                SetTextProportional(1)
+                SetTextColour(255, 255, 255, 215)
+                if onScreen then
+                    SetTextDropshadow(0, 0, 0, 0, 255)
+                    SetTextEdge(2, 0, 0, 0, 150)
+                    SetTextDropShadow()
+                    SetTextOutline()
+                    SetTextEntry("STRING")
+                    AddTextComponentString(v.text)
+                    DrawText(_x, _y)
+                end
             end
         end
     end
@@ -317,18 +321,68 @@ function addTargetProp(prop, dataProp)
                 end
                 if dataProp.data.generator then
                     target[#target + 1] = { 
+                        label = 'Allimenté',
+                        icon = 'fa-solid fa-gas-pump',
+                        iconColor = 'orange',
+                        name = 'boxzone',
+                        onSelect = function(data)
+                            ESX.TriggerServerCallback('grvsc_faction:getProp', function(prop)
+                                ESX.TriggerServerCallback('grvsc_faction:getFuelItem', function(fuel)
+                                    if fuel > 0 then
+                                        prop = json.decode(prop)
+                                        dataProp.data.generator.fuel = prop.generator.fuel
+                                        if dataProp.data.generator.fuel+5 <= dataProp.data.generator.maxfuel then
+                                            if lib.progressBar({
+                                                duration = 10000,
+                                                label = 'Remplissage',
+                                                useWhileDead = false,
+                                                canCancel = true,
+                                                disable = {
+                                                    car = true,
+                                                },
+                                                anim = {
+                                                    dict = 'weapon@w_sp_jerrycan',
+                                                    clip = 'fire'
+                                                },
+                                                prop = {
+                                                    model = 'prop_jerrycan_01a',
+                                                    pos = vec3(0.03, 0.03, 0.52),
+                                                    rot = vec3(0.0, 180.0, -240.5)
+                                                },
+                                            }) then
+                                                ESX.TriggerServerCallback('grvsc_faction:getFuelItem', function(fuelx2)
+                                                    if fuelx2 > 0 then
+                                                        print(fuelx2)
+                                                        dataProp.data.generator.fuel =  dataProp.data.generator.fuel+5
+                                                        TriggerServerEvent('grvsc_faction:addFuel', dataProp)
+                                                    end
+                                                end)
+                                            end
+                                        end
+                                    end
+                                end)
+                            end, dataProp.id)
+                        end
+                    }
+                    target[#target + 1] = { 
                         label = 'Allumer/Eteindre le générateur',
                         icon = 'fa-solid fa-user-tie',
                         iconColor = 'orange',
                         name = 'boxzone',
                         onSelect = function(data)
-                            if dataProp.data.generator.active then
-                                dataProp.data.generator.active = false
-                                TriggerServerEvent('grvsc_faction:updateProp', dataProp)
-                            else
-                                dataProp.data.generator.active = true
-                                TriggerServerEvent('grvsc_faction:updateProp', dataProp)
-                            end
+                            ESX.TriggerServerCallback('grvsc_faction:getProp', function(result)
+                                result = json.decode(result)
+                                dataProp.data.generator.fuel = result.generator.fuel
+                                if dataProp.data.generator.fuel > 0 then
+                                    if dataProp.data.generator.active then
+                                        dataProp.data.generator.active = false
+                                        TriggerServerEvent('grvsc_faction:updateProp', dataProp)
+                                    else
+                                        dataProp.data.generator.active = true
+                                        TriggerServerEvent('grvsc_faction:updateProp', dataProp)
+                                    end
+                                end
+                            end, dataProp.id)
                         end
                     }
                 end

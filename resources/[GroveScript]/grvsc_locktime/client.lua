@@ -1,7 +1,7 @@
 Citizen.CreateThread(function()
     while true do
         Wait(1000)
-        NetworkOverrideClockTime(20, 0, 0)
+        NetworkOverrideClockTime(12, 0, 0)
         SetWeatherTypePersist("HALLOWEEN")
         SetWeatherTypeNowPersist("HALLOWEEN")
         SetWeatherTypeNow("HALLOWEEN")

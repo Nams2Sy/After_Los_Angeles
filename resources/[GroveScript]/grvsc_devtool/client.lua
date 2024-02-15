@@ -76,6 +76,10 @@ RegisterCommand("spawnPeds", function()
         SetPedMovementClipset(ped, walk, 1.5)
     end
 end, false)
+
+local playerPed = GetPlayerPed(-1)
+local isPumpingGas = false
+
 RegisterCommand('light', function(source, args, rawCommand)
     local pos = GetEntityCoords(PlayerPedId())
     local heading = GetEntityHeading(PlayerPedId())
