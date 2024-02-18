@@ -13,10 +13,8 @@ end)
 
 lib.callback.register("als_stations:craft", function (source, station_id, recipe_id)
     local station = GetStation(station_id)
-    print(station_id)
-    print(station.id)
     if not station then return end
-    station:craft()
+    station:craft(recipe_id)
 end)
 
 lib.callback.register('als_stations:getTime', function(source)

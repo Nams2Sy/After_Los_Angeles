@@ -23,6 +23,11 @@ shared_scripts {
     "utils.lua"
 }
 
+ui_page 'web/index.html'
+files {
+    'web/**/*',
+}
+
 dependencies {
     'es_extended',
     'oxmysql',

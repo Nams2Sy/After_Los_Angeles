@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://cfx-nui-als_crafting/web/app.js" async></script>
+
+    <style>
+        @font-face {
+            font-family: Raleway;
+            src: url(fonts/raleway.ttf);
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            background-color: rgba(29, 29, 29, 0.96);
+            margin: 0;
+            color: rgb(221, 221, 221);
+            font-family: 'Raleway';
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 4rem;
+        }
+
+        #wrapper {
+            margin-top: 4%;
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+        }
+
+        #queue .slot {
+            width: 300px;
+            min-height: 100px;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background-color: rgba(19, 19, 19, 0.596);
+            border-radius: 15px;
+        }
+        
+        .progressbar-wrapper {
+            background-color: rgba(167, 47, 0, 0.342);
+            color: white;
+            border-radius: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: rgba(255, 72, 0, 0.589);
+            color: white;
+            padding: .5rem;
+            text-align: right;
+            font-size: 15px;
+            border-radius: 10px;
+        }
+
+        #output .slot {
+            width: 300px;
+            min-height: 100px;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background-color: rgba(82, 82, 82, 0.733);
+            border-radius: 15px;
+        }
+
+        #recipe-list {
+            column-count: 2;
+            column-gap: 20px;
+        }
+
+        .recipe {
+            margin-bottom: 20px;
+            padding: 2px 15px;
+            background-color: rgba(50, 50, 50, 0.5);
+            border-radius: 15px;
+            cursor: pointer;
+
+            transition-property: all;
+            transition-duration: .2s;
+        }
+
+        .recipe:hover {
+            background-color: rgba(71, 71, 71, 0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body id="body">
+    <div id="wrapper">
+        <header>
+            <h1 id="station-name"></h1>
+        </header>
+        <div id="container">
+            <div id="queue">
+                <h2>File d'attente</h2>
+                <div id="queue-list">
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                </div>
+            </div>
+            <div id="recipes">
+                <h2>Recettes</h2>
+                <div id="recipe-list"></div>
+            </div>
+            <div id="output">
+                <h2>Inventaire</h2>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

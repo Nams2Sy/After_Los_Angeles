@@ -12,7 +12,6 @@ Utils.GetRecipes = function (type)
     for _, recipe in ipairs(Config.Recipes[type]) do
         table.insert(recipes, recipe)
     end
-    print(json.encode(recipes))
     return recipes
 end
 

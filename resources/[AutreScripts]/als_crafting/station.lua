@@ -28,16 +28,26 @@ end
 function Station:getRecipePercentage()
     local recipe = self:getRecipe()
     if not recipe then return end
-    
+
     local elapsed = recipe.time - self.time_left / 1000
     return Utils.Clamp(0, (elapsed * 100) / recipe.time, 100)
 end
 
+function Station:toTable()
+    return {
+        id = self.id,
+        coords = self.coords,
+        type = self.type,
+        recipe_queue = self.recipe_queue,
+        time_left = self.time_left,
+        output = self.output
+    }
+end
+
 if IsDuplicityVersion() then
 
-    function Station:craft()
-        table.insert(self.recipe_queue, 1)
-        table.insert(self.recipe_queue, 2)
+    function Station:craft(recipe_id)
+        table.insert(self.recipe_queue, tonumber(recipe_id))
     end
 
     function Station:tick ()
