@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 author 'Nam2Sy'
-description 'Faction'
+description 'Devtool by grovescript'
 version '1.0.0'
 
 -- Script côté serveur
@@ -13,7 +13,10 @@ server_scripts {
     'json.lua',
 }
 client_scripts {
-    'client.lua'
+    'client.lua',
+    'config.lua',
+    'build.lua',
+    'props.lua'
 }
 
 shared_scripts {
@@ -24,7 +27,8 @@ dependencies {
     'ox_lib',
     'es_extended',
     'oxmysql',
-    'ox_inventory'
+    'ox_inventory',
+    'okokNotify'
 }
 
 files {

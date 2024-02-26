@@ -2,7 +2,7 @@ HSN = {}
 
 ServerConfig = {
     DiscordBotToken = "",
-    DiscordWebhook = ""
+    DiscordWebhook = "https://discord.com/api/webhooks/1204142951270457485/vONqON6PlbGm-CmaEs-3rQhy8UpIXiXJcBy8aYX1piUpg7T1P6jlJK1IqnU1lxhb2OmL"
 }
 
 GetPlayerCharacterNameESX = function(source)

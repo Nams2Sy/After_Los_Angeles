@@ -966,12 +966,11 @@ RegisterNetEvent('ox_inventory:inventoryConfiscated', function(message)
 	updateInventory(items, 0)
 end)
 
-
+local bag = nil
 ---@param point CPoint
 local function nearbyDrop(point)
 	if not point.instance or point.instance == currentInstance then
 		---@diagnostic disable-next-line: param-type-mismatch
-		DrawMarker(2, point.coords.x, point.coords.y, point.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 150, 30, 30, 222, false, false, 0, true, false, false, false)
 	end
 end
 
@@ -988,14 +987,12 @@ local function onEnterDrop(point)
 		PlaceObjectOnGroundProperly(entity)
 		FreezeEntityPosition(entity, true)
 		SetEntityCollision(entity, false, true)
-
 		point.entity = entity
 	end
 end
 
 local function onExitDrop(point)
 	local entity = point.entity
-
 	if entity then
 		Utils.DeleteEntity(entity)
 		point.entity = nil
@@ -1010,7 +1007,8 @@ local function createDrop(dropId, data)
 		instance = data.instance,
 		model = data.model
 	})
-
+	bag = CreateObject(GetHashKey('prop_ld_binbag_01'), point.coords.x-0.3, point.coords.y-0.4, point.coords.z-1, true, true, true)
+	FreezeEntityPosition(bag, true)
 	if point.model or client.dropprops then
 		point.distance = 30
 		point.onEnter = onEnterDrop
@@ -1048,11 +1046,10 @@ end)
 RegisterNetEvent('ox_inventory:removeDrop', function(dropId)
 	if client.drops then
 		local point = client.drops[dropId]
-
 		if point then
 			client.drops[dropId] = nil
 			point:remove()
-
+			DeleteEntity(bag)
 			if point.entity then Utils.DeleteEntity(point.entity) end
 		end
 	end
@@ -1211,7 +1208,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 	---@param point CPoint
 	local function nearbyLicense(point)
 		---@diagnostic disable-next-line: param-type-mismatch
-		DrawMarker(2, point.coords.x, point.coords.y, point.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 30, 150, 30, 222, false, false, 0, true, false, false, false)
+		DrawMarker(32, point.coords.x, point.coords.y, point.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 30, 150, 30, 222, false, false, 0, true, false, false, false)
 
 		if point.isClosest and point.currentDistance < 1.2 then
 			if not hasTextUi then

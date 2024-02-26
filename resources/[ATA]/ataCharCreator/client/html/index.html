@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.9.55/css/materialdesignicons.min.css" integrity="sha512-vIgFb4o1CL8iMGoIF7cYiEVFrel13k/BkTGvs0hGfVnlbV6XjAA0M0oEHdWqGdAVRTDID3vIZPOHmKdrMAUChA==" crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+
+    <title>After-LS</title>
+</head>
+
+<body>
+    <div id="loader"></div>
+    <section class="choosesex fullpage" id="0Page">
+        <div class="backsex fullpage">
+            <div class="stepbox">
+
+                <h2 class="steptext">Quel sera le sexe de votre personnage ?</h2>
+            </div>
+            <div class="sexselector">
+
+                <div class="man sexxx" onclick="choosesex('man');changeCam('gofamily');">
+                    <img src="./icons/man.svg">
+                    <span class="textsex">Homme</span>
+                </div>
+                <div class="woman sexxx" onclick="choosesex('woman');changeCam('gofamily');">
+                    <img src="./icons/woman.svg">
+                    <span class="textsex">Femme</span>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <section class="family fullpage" style="display: none;">
+        <h2 class="toptext">Héritage</h2>
+        <div class="menu" data-page="1">
+
+            <div class="options" id="1Page">
+                <button class="btn" onclick="backbtn('0Page', '1Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Mère</span>
+                        <div class="dokmei2">
+                            <button class="left" onclick="leftHandle('mother', 'mom')"><img src="./icons/arrow.svg"></button>
+                            <span class="nameoption" id="mothervalue2">Hannah</span>
+                            <button class="right" onclick="rightHandle('mother', 'mom')"><img src="./icons/arrow.svg"></button>
+                            <input style="display: none;" class="range-slider__range" type="number" value="21" min="21" max="41" id="mothervalue">
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Père</span>
+                        <div class="dokmei2">
+                            <button class="left" onclick="leftHandle('father', 'dad')"><img src="./icons/arrow.svg"></button>
+                            <span class="nameoption" id="fathervalue2">Benjamin</span>
+                            <button class="right" onclick="rightHandle('father', 'dad')"><img src="./icons/arrow.svg"></button>
+                            <input style="display: none;" class="range-slider__range" type="number" value="0" min="0" max="20" id="fathervalue">
+                        </div>
+                    </div>
+
+                    <div class="dokmei">
+                        <span class="esmoption">Ressemblance</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="100" id="Similarity" onmousemove="changeCharacterAppereance('Similarity', 'face_md_weight')">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Aparence</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="100" id="faceOne" onmousemove="changeCharacterAppereance('faceOne', 'skin_md_weight')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn next" onclick="nextbtn('2Page','1Page');changeCam('nose');">Suivant</button>
+
+                <!-- <button class="btn" onclick="randomHandle('family')">random</button> -->
+            </div>
+
+            <div class="options" id="2Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '2Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Largeur du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseOne" onmousemove="changeCharacterAppereance('noseOne', 'nose_1')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Taille du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseTwo" onmousemove="changeCharacterAppereance('noseTwo', 'nose_2')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Longueur de l’extrémité du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseThree" onmousemove="changeCharacterAppereance('noseThree', 'nose_3')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Profondeur de l’arête du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseFour" onmousemove="changeCharacterAppereance('noseFour', 'nose_4')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Hauteur de l’extrémité du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseFive" onmousemove="changeCharacterAppereance('noseFive', 'nose_5')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Casse du nez</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="-10" min="-10" max="10" id="noseSix" onmousemove="changeCharacterAppereance('noseSix', 'nose_6')">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','2Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="3Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '3Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Type de sourcils</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="34" id="eyebrowOne" onmousemove="changeCharacterAppereance('eyebrowOne', 'eyebrows_1')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Taille des sourcils</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="10" id="eyebrowTwo" onmousemove="changeCharacterAppereance('eyebrowTwo', 'eyebrows_2')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Couleur des sourcils</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="60" id="eyebrowThree" onmousemove="changeCharacterAppereance('eyebrowThree', 'eyebrows_3')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Hauteur des sourcils</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="eyebrowFour" onmousemove="changeCharacterAppereance('eyebrowFour', 'eyebrows_5')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Profondeur du sourcil</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="eyebrowFive" onmousemove="changeCharacterAppereance('eyebrowFive', 'eyebrows_6')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','3Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="4Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '4Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">hauteur de la pommette</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceThree" onmousemove="changeCharacterAppereance('faceThree', 'cheeks_1')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Largeur de la pommette</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceFour" onmousemove="changeCharacterAppereance('faceFour', 'cheeks_2')">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','4Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="5Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '5Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Largeur de la joue</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceFive" onmousemove="changeCharacterAppereance('faceFive', 'cheeks_3')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','5Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="6Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '6Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Plissé des yeux</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="eyeOne" onmousemove="changeCharacterAppereance('eyeOne', 'eye_squint')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Couleur des yeux</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="30" id="eyeTwo" onmousemove="changeCharacterAppereance('eyeTwo', 'eye_color')">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','6Page');changeCam('clothes')">FINISH</button>
+
+            </div>
+            <div class="options" id="7Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '7Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Hauteur du menton</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceNine" onmousemove="changeCharacterAppereance('faceNine', 'chin_1')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Longueur du menton</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceTen" onmousemove="changeCharacterAppereance('faceTen', 'chin_2')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Largeur du menton</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceEleven" onmousemove="changeCharacterAppereance('faceEleven', 'chin_3')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Taille du trou de menton</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceTwelve" onmousemove="changeCharacterAppereance('faceTwelve', 'chin_4')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','7Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="8Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '8Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Epaisseur de la lèvre</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="10" id="makeupFive" onmousemove="changeCharacterAppereance('makeupFive', 'lip_thickness')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Largeur de la mâchoire</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceSeven" onmousemove="changeCharacterAppereance('faceSeven', 'jaw_1')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Hauteur de la mâchoire</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceEight" onmousemove="changeCharacterAppereance('faceEight', 'jaw_2')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei">
+                        <span class="esmoption">Epaisseur du col</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="-10" max="10" id="faceThirteen" onmousemove="changeCharacterAppereance('faceThirteen', 'neck_thickness')">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','8Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+
+            <div class="options" id="9Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '9Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Type de cheveux</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="74" id="hairOne" onmousemove="changeCharacterAppereance( 'hairOne', 'hair_1') ">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="dokmei">
+                        <span class="esmoption">Hair type</span>
+                        <div class="dokmei2">
+                            <button class="left" onclick="leftHandle('hairOne', 'hair_1')"><img src="./icons/arrow.svg"></button>
+                            <span class="nameoption" id="hairOne2">Ziba</span>
+                            <button class="right" onclick="rightHandle('hairOne', 'hair_1')"><img src="./icons/arrow.svg"></button>
+                            <input style="display: none;" class="range-slider__range" type="number" value="50" min="0" max="74" id="hairOnevalue">
+                        </div>
+                    </div> -->
+
+                    <div class="dokmei ">
+                        <span class="esmoption ">Couleur de cheveux</span>
+                        <div class="dokmei1 ">
+                            <div class="ranger ">
+                                <input class="range-style " type="range" value="0" min="0" max="62" id="hairTwo" onmousemove="changeCharacterAppereance( 'hairTwo', 'hair_color_1') ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei ">
+                        <span class="esmoption ">Couleur des mèches</span>
+                        <div class="dokmei1 ">
+                            <div class="ranger ">
+                                <input class="range-style " type="range" value="0" min="0" max="62" id="hairThree" onmousemove="changeCharacterAppereance( 'hairThree', 'hair_color_2') ">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','9Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="10Page" style="display: none;">
+                <button class="btn" onclick="backbtn('1Page', '10Page');changeCam('gofamily');">Retour</button>
+                <div class="dokmeibtns">
+                    <div class="dokmei">
+                        <span class="esmoption">Type de barbe</span>
+                        <div class="dokmei1">
+                            <div class="ranger">
+                                <input class="range-style" type="range" value="0" min="0" max="28" id="beardOne" onmousemove="changeCharacterAppereance( 'beardOne', 'beard_1') ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei ">
+                        <span class="esmoption ">Taille de la barbe</span>
+                        <div class="dokmei1 ">
+                            <div class="ranger ">
+                                <input class="range-style " type="range" value="0" min="0" max="10" id="beardTwo" onmousemove="changeCharacterAppereance( 'beardTwo', 'beard_2') ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dokmei ">
+                        <span class="esmoption ">Couleur de la barbe</span>
+                        <div class="dokmei1 ">
+                            <div class="ranger ">
+                                <input class="range-style " type="range" value="0" min="0 " max="64" id="beardThree" onmousemove="changeCharacterAppereance( 'beardThree', 'beard_3') ">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <button class="btn next" onclick="nextbtn('clothPage','10Page');changeCam('clothes')">Suivant</button>
+
+            </div>
+            <div class="options" id="clothPage" style="display: none;">
+                <button class="btn" onclick="backbtn('2Page','clothPage');changeCam('nose');">Retour</button>
+                <button class="btn next" onclick="save()">Sauvegarder</button>
+            </div>
+            <div class="flex">
+                <input type="button" class="flex-child" id="rotate_left_character" value="Gauche">
+                <input type="button" class="flex-child" id="rotate_right_character"  value="Droite">
+            </div>
+        </div>
+    </section>
+
+    <section class="items fullpage " style="display: none; ">
+
+        <div class="mainitem ">
+
+            <div class="bini itemha " data-page="2Page " data-name="NEZ ">
+                <img src="./icons/bini.png ">
+            </div>
+
+            <div class="abro itemha " data-page="3Page " data-name="SOURCILS ">
+
+                <img src="./icons/ebro.png ">
+            </div>
+            <div class="fak itemha " data-page="4Page " data-name="POMMETTES ">
+
+                <img src="./icons/fak.png ">
+            </div>
+            <div class="lop itemha " data-page="5Page " data-name="JOUE ">
+                <img src="./icons/lop.png ">
+            </div>
+            <div class="cheshm itemha " data-page="6Page " data-name="OEIL ">
+                <img src="./icons/cheshm.png ">
+            </div>
+            <div class="chone itemha " data-page="7Page " data-name="MENTON ">
+                <img src="./icons/chone.png ">
+            </div>
+            <div class="lab itemha " data-page="8Page " data-name="AUTRE ">
+                <img src="./icons/lab.png ">
+            </div>
+            <div class="mo itemha " data-page="9Page " data-name="CHEVEUX ">
+                <img src="./icons/mo.png ">
+            </div>
+            <div class="rish itemha " data-page="10Page " data-name="BARBE ">
+                <img src="./icons/rish.png ">
+            </div>
+
+
+        </div>
+
+    </section>
+    <section class="clothes fullpage " style="display: none; ">
+        <div class="btnChangeCloth" data-currentAction="tshirt" data-name="tshirt">
+            <button class="btnChange leftbtn" onclick="leftCloth()"><img src="./icons/arrow.png" class="imgchngl"></button>
+            <button class="btnChange rightbtn"  onclick="rightCloth()"><img src="./icons/arrow.png" class="imgchngr"></button>
+        </div>
+
+
+        <div class="mainitem">
+            <div class="tshirt itemha" data-page="clothPage" data-name="tshirt">
+                <img src="./icons/shirt.png ">
+            </div>
+            <div class="pants itemha" data-page="clothPage" data-name="pantalon">
+                <img src="./icons/pants.png ">
+            </div>
+            <div class="shoes itemha" data-page="clothPage" data-name="chaussure">
+                <img src="./icons/shoes.png ">
+            </div>
+
+        </div>
+
+    </section>
+    <div class="dayere fullpage "></div>
+
+    <!-- js link  -->
+
+    <script src="app.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js " integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q " crossorigin="anonymous "></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js " integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl " crossorigin="anonymous "></script>
+</body>
+
+</html>

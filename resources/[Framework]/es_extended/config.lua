@@ -1,5 +1,5 @@
 Config = {}
-Config.Locale = GetConvar("esx:locale", "en")
+Config.Locale = GetConvar("esx:locale", "fr")
 
 Config.OxInventory = GetResourceState("ox_inventory") ~= 'missing' 
 
@@ -18,12 +18,12 @@ Config.Accounts = {
     },
 }
 
-Config.StartingAccountMoney = { bank = 50000 }
+Config.StartingAccountMoney = { bank = 0 }
 
 Config.StartingInventoryItems = false -- table/false
 
 Config.DefaultSpawns = { -- If you want to have more spawn positions and select them randomly uncomment commented code or add more locations
-    { x = 222.2027, y = -864.0162, z = 30.2922, heading = 1.0 },
+    { x = 141.39405822754, y = -747.41589355469, z = 254.25531005859, heading = 1.0 },
     --{x = 224.9865, y = -865.0871, z = 30.2922, heading = 1.0},
     --{x = 227.8436, y = -866.0400, z = 30.2922, heading = 1.0},
     --{x = 230.6051, y = -867.1450, z = 30.2922, heading = 1.0},
