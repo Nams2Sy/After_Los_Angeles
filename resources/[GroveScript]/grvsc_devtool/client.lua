@@ -3,14 +3,11 @@ local rope = nil
 -- Fonction pour dessiner une ligne entre deux points
 function DrawRope(x1, y1, z1, x2, y2, z2)
     local ped = GetPlayerPed(-1)
-
     local ropeCoords = {
         x1, y1, z1 - 0.95, -- Point A
         x2, y2, z2 - 0.95, -- Point B
     }
-
     local ropeEntity = Citizen.InvokeNative(0xFAA599A0353810D7, 2, ropeCoords, 7, 0, 0)
-
     return ropeEntity
 end
 
